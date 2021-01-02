@@ -1,0 +1,270 @@
+[
+    {
+        "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+        "id": "10004",
+        "self": "http://localhost:2990/jira/rest/api/2/issue/10004",
+        "key": "TP-3",
+        "fields": {
+            "issuetype": {
+                "self": "http://localhost:2990/jira/rest/api/2/issuetype/10000",
+                "id": "10000",
+                "description": "A task that needs to be done.",
+                "iconUrl": "http://localhost:2990/jira/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype",
+                "name": "Task",
+                "subtask": false,
+                "avatarId": 10318
+            },
+            "components": [],
+            "timespent": null,
+            "timeoriginalestimate": null,
+            "description": null,
+            "project": {
+                "self": "http://localhost:2990/jira/rest/api/2/project/10100",
+                "id": "10100",
+                "key": "TP",
+                "name": "Test Project",
+                "avatarUrls": {
+                    "48x48": "http://localhost:2990/jira/secure/projectavatar?avatarId=10324",
+                    "24x24": "http://localhost:2990/jira/secure/projectavatar?size=small&avatarId=10324",
+                    "16x16": "http://localhost:2990/jira/secure/projectavatar?size=xsmall&avatarId=10324",
+                    "32x32": "http://localhost:2990/jira/secure/projectavatar?size=medium&avatarId=10324"
+                }
+            },
+            "fixVersions": [],
+            "aggregatetimespent": null,
+            "resolution": null,
+            "aggregatetimeestimate": null,
+            "resolutiondate": null,
+            "workratio": -1,
+            "summary": "test 3",
+            "lastViewed": "2021-01-01T17:26:27.147+0100",
+            "watches": {
+                "self": "http://localhost:2990/jira/rest/api/2/issue/TP-3/watchers",
+                "watchCount": 1,
+                "isWatching": true
+            },
+            "creator": {
+                "self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
+                "name": "admin",
+                "key": "admin",
+                "emailAddress": "admin@admin.com",
+                "avatarUrls": {
+                    "48x48": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=48",
+                    "24x24": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=24",
+                    "16x16": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=16",
+                    "32x32": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=32"
+                },
+                "displayName": "admin",
+                "active": true,
+                "timeZone": "Europe/Belgrade"
+            },
+            "subtasks": [],
+            "created": "2021-01-01T17:26:27.000+0100",
+            "reporter": {
+                "self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
+                "name": "admin",
+                "key": "admin",
+                "emailAddress": "admin@admin.com",
+                "avatarUrls": {
+                    "48x48": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=48",
+                    "24x24": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=24",
+                    "16x16": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=16",
+                    "32x32": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=32"
+                },
+                "displayName": "admin",
+                "active": true,
+                "timeZone": "Europe/Belgrade"
+            },
+            "aggregateprogress": {
+                "progress": 0,
+                "total": 0
+            },
+            "priority": {
+                "self": "http://localhost:2990/jira/rest/api/2/priority/3",
+                "iconUrl": "http://localhost:2990/jira/images/icons/priorities/medium.svg",
+                "name": "Medium",
+                "id": "3"
+            },
+            "labels": [],
+            "environment": null,
+            "timeestimate": null,
+            "aggregatetimeoriginalestimate": null,
+            "versions": [],
+            "duedate": null,
+            "progress": {
+                "progress": 0,
+                "total": 0
+            },
+            "issuelinks": [],
+            "votes": {
+                "self": "http://localhost:2990/jira/rest/api/2/issue/TP-3/votes",
+                "votes": 0,
+                "hasVoted": false
+            },
+            "assignee": {
+                "self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
+                "name": "admin",
+                "key": "admin",
+                "emailAddress": "admin@admin.com",
+                "avatarUrls": {
+                    "48x48": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=48",
+                    "24x24": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=24",
+                    "16x16": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=16",
+                    "32x32": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=32"
+                },
+                "displayName": "admin",
+                "active": true,
+                "timeZone": "Europe/Belgrade"
+            },
+            "updated": "2021-01-01T17:26:27.000+0100",
+            "status": {
+                "self": "http://localhost:2990/jira/rest/api/2/status/10000",
+                "description": "",
+                "iconUrl": "http://localhost:2990/jira/images/icons/status_generic.gif",
+                "name": "To Do",
+                "id": "10000",
+                "statusCategory": {
+                    "self": "http://localhost:2990/jira/rest/api/2/statuscategory/2",
+                    "id": 2,
+                    "key": "new",
+                    "colorName": "blue-gray",
+                    "name": "To Do"
+                }
+            }
+        }
+    },
+    {
+        "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+        "id": "10003",
+        "self": "http://localhost:2990/jira/rest/api/2/issue/10003",
+        "key": "SP-2",
+        "fields": {
+            "issuetype": {
+                "self": "http://localhost:2990/jira/rest/api/2/issuetype/10000",
+                "id": "10000",
+                "description": "A task that needs to be done.",
+                "iconUrl": "http://localhost:2990/jira/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype",
+                "name": "Task",
+                "subtask": false,
+                "avatarId": 10318
+            },
+            "components": [],
+            "timespent": null,
+            "timeoriginalestimate": null,
+            "description": null,
+            "project": {
+                "self": "http://localhost:2990/jira/rest/api/2/project/10000",
+                "id": "10000",
+                "key": "SP",
+                "name": "Sample project",
+                "avatarUrls": {
+                    "48x48": "http://localhost:2990/jira/secure/projectavatar?avatarId=10324",
+                    "24x24": "http://localhost:2990/jira/secure/projectavatar?size=small&avatarId=10324",
+                    "16x16": "http://localhost:2990/jira/secure/projectavatar?size=xsmall&avatarId=10324",
+                    "32x32": "http://localhost:2990/jira/secure/projectavatar?size=medium&avatarId=10324"
+                }
+            },
+            "fixVersions": [],
+            "aggregatetimespent": null,
+            "resolution": null,
+            "aggregatetimeestimate": null,
+            "resolutiondate": null,
+            "workratio": -1,
+            "summary": "sample 2",
+            "lastViewed": "2021-01-01T17:02:38.915+0100",
+            "watches": {
+                "self": "http://localhost:2990/jira/rest/api/2/issue/SP-2/watchers",
+                "watchCount": 1,
+                "isWatching": true
+            },
+            "creator": {
+                "self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
+                "name": "admin",
+                "key": "admin",
+                "emailAddress": "admin@admin.com",
+                "avatarUrls": {
+                    "48x48": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=48",
+                    "24x24": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=24",
+                    "16x16": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=16",
+                    "32x32": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=32"
+                },
+                "displayName": "admin",
+                "active": true,
+                "timeZone": "Europe/Belgrade"
+            },
+            "subtasks": [],
+            "created": "2021-01-01T17:02:38.000+0100",
+            "reporter": {
+                "self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
+                "name": "admin",
+                "key": "admin",
+                "emailAddress": "admin@admin.com",
+                "avatarUrls": {
+                    "48x48": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=48",
+                    "24x24": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=24",
+                    "16x16": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=16",
+                    "32x32": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=32"
+                },
+                "displayName": "admin",
+                "active": true,
+                "timeZone": "Europe/Belgrade"
+            },
+            "aggregateprogress": {
+                "progress": 0,
+                "total": 0
+            },
+            "priority": {
+                "self": "http://localhost:2990/jira/rest/api/2/priority/3",
+                "iconUrl": "http://localhost:2990/jira/images/icons/priorities/medium.svg",
+                "name": "Medium",
+                "id": "3"
+            },
+            "labels": [],
+            "environment": null,
+            "timeestimate": null,
+            "aggregatetimeoriginalestimate": null,
+            "versions": [],
+            "duedate": "2021-01-18",
+            "progress": {
+                "progress": 0,
+                "total": 0
+            },
+            "issuelinks": [],
+            "votes": {
+                "self": "http://localhost:2990/jira/rest/api/2/issue/SP-2/votes",
+                "votes": 0,
+                "hasVoted": false
+            },
+            "assignee": {
+                "self": "http://localhost:2990/jira/rest/api/2/user?username=admin",
+                "name": "admin",
+                "key": "admin",
+                "emailAddress": "admin@admin.com",
+                "avatarUrls": {
+                    "48x48": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=48",
+                    "24x24": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=24",
+                    "16x16": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=16",
+                    "32x32": "https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&s=32"
+                },
+                "displayName": "admin",
+                "active": true,
+                "timeZone": "Europe/Belgrade"
+            },
+            "updated": "2021-01-01T17:02:38.000+0100",
+            "status": {
+                "self": "http://localhost:2990/jira/rest/api/2/status/10000",
+                "description": "",
+                "iconUrl": "http://localhost:2990/jira/images/icons/status_generic.gif",
+                "name": "To Do",
+                "id": "10000",
+                "statusCategory": {
+                    "self": "http://localhost:2990/jira/rest/api/2/statuscategory/2",
+                    "id": 2,
+                    "key": "new",
+                    "colorName": "blue-gray",
+                    "name": "To Do"
+                }
+            }
+        }
+    }
+]

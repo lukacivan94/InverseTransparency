@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+  <plugin-info>
+    <description>${project.description}</description>
+    <version>${project.version}</version>
+    <vendor name="${project.organization.name}" url="${project.organization.url}" />
+    <param name="plugin-icon">images/pluginIcon.png</param>
+    <param name="plugin-logo">images/pluginLogo.png</param>
+  </plugin-info>
+  <!-- add our i18n resource -->
+  <resource type="i18n" name="i18n" location="dashboardPlugins" />
+  <!-- add our web resources -->
+
+  <web-resource key="dashboardPlugins-resources" name="dashboardPlugins Web Resources">
+    <dependency>com.atlassian.auiplugin:ajs</dependency>
+    <resource type="download" name="pluginStyle.css" location="/css/pluginStyle.css" />
+    <resource type="download" name="images/" location="/images" />
+    <context>dashboardPlugins</context>
+  </web-resource>
+
+  <resource type="download" name="dashboardPlugin.js" location="js/dashboardPlugin.js">
+    <param name="content-type" value="application/javascript" />
+  </resource>
+
+  <resource type="download" name="issuesOverview.js" location="js/issuesOverview.js">
+    <param name="content-type" value="application/javascript" />
+  </resource>
+
+  <web-item name="myItem" i18n-name-key="transparenz-item.name" key="transparenz-item" section="system.top.navigation.bar" weight="1000">
+    <description key="transparenz-item.description">The myItem Plugin</description>
+    <label key="transparenz-item.label" />
+    <link linkId="transparenz-item-link" />
+  </web-item>
+  <web-section name="mySection" i18n-name-key="transparenz-section.name" key="transparenz-section" location="transparenz-item-link" weight="1000">
+    <description key="transparenz-section.description">The mySection Plugin</description>
+  </web-section>
+  <web-item name="Dashboard" i18n-name-key="dashboard.name" key="dashboard" section="transparenz-item-link/transparenz-section" weight="1000">
+    <description key="dashboard.description">The Dashboard Plugin</description>
+    <label key="dashboard.label" />
+    <link linkId="dashboard-link">http://www.inversetransparenz.de/</link>
+  </web-item>
+  <gadget name="Ethical Plugin" i18n-name-key="ethical-plugin.name" key="ethical-plugin" location="gadgets/ethical-plugin/gadget.xml">
+    <description key="ethical-plugin.description">The Ethical Analysis Plugin</description>
+  </gadget>
+  <gadget name="Issues Overview" i18n-name-key="issues-plugin.name" key="issues-plugin" location="gadgets/issuesOverview/gadget.xml">
+    <description key="issues-plugin.description">The Issues Overview plugin</description>
+  </gadget>
+</atlassian-plugin>
