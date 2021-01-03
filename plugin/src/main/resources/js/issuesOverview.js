@@ -17,8 +17,8 @@ var currentProject;
 const users = [];
 var currentUser;
 const issues = [];
-
-
+var dropdown;
+var defaultOption;
 /**
  * This function gets called by the submit button to change the current user and update the plugin.
  */
@@ -26,6 +26,46 @@ function changeUser() {
     currentUser = $('#user').val();
     //getIssues(true);
 }
+
+// function getUsersDropdown() {
+//     //getUsers();
+//     dropdown = document.getElementById('locality-dropdown');
+//     dropdown.length = 0;
+
+//     defaultOption = document.createElement('option');
+//     defaultOption.text = 'Select user';
+
+//     dropdown.add(defaultOption);
+//     dropdown.selectedIndex = 0;
+
+//     const url = '"/jira/rest/api/2/user/search?username=.&maxResults=2000"';
+
+//     fetch(url)
+//         .then(
+//             function (response) {
+//                 if (response.status !== 200) {
+//                     console.warn('Looks like there was a problem. Status Code: ' +
+//                         response.status);
+//                     return;
+//                 }
+
+//                 // Examine the text in the response  
+//                 response.json().then(function (data) {
+//                     var option;
+
+//                     for (var i = 0; i < data.length; i++) {
+//                         option = document.createElement('option');
+//                         option.text = data[i].name;
+//                         option.value = data[i].key;
+//                         dropdown.add(option);
+//                     }
+//                 });
+//             }
+//         )
+//         .catch(function (err) {
+//             console.error('Fetch Error -', err);
+//         });
+// }
 
 /**
  * This function gets a list of all users and saves them in users. 
@@ -45,15 +85,25 @@ function getUsers() {
                 resultJson.forEach(function (res) {
                     users.push({
                         name: res.name,
+                        key: res.key,
+                        fullname: res.displayName
                     });
                 });
-                console.log("All users: " + JSON.stringify(resultJson));
-                console.log("Users outside of forEach: " + JSON.stringify(users));
+                var select = document.getElementById("selectUser");
+                var options = users;
+
+                for (var i = 0; i < options.length; i++) {
+                    var opt = options[i];
+                    var el = document.createElement("option");
+                    el.textContent = opt.fullname;
+                    el.value = opt.key;
+                    select.appendChild(el);
+                }
+                //console.log("All users: " + JSON.stringify(resultJson));
+                console.log("Users: " + JSON.stringify(users));
             }
         });
 }
-
-
 
 /**
  * This function gets all projects and stores them in projects.
@@ -83,8 +133,11 @@ function getProjects() {
  * This function gets all issues from the user and stores them in issues.
  * @param {String} user name of the user
  */
-function getIssuesOfUser(user) {
-    fetch("/jira/rest/api/2/search?jql=assignee=" + user)
+function getIssuesOfUser() {
+    issues.length = 0;
+    currentUser = document.getElementById('selectUser').value;
+    console.log("Current user is: " + currentUser);
+    fetch("/jira/rest/api/2/search?jql=assignee=" + currentUser)
         .then(function (response) {
             if (response.ok) {
                 return response.json();
@@ -106,6 +159,7 @@ function getIssuesOfUser(user) {
                                 duedate: res.fields.duedate,
                                 resolution: res.fields.resolution.name, //taking name if not null
                                 resolutiondate: res.fields.resolutiondate,
+                                assignee: res.fields.assignee.name,
                                 category: "green"
                             });
                         } else {
@@ -117,10 +171,11 @@ function getIssuesOfUser(user) {
                                 duedate: res.fields.duedate,
                                 resolution: res.fields.resolution.name, //taking name if not null
                                 resolutiondate: res.fields.resolutiondate,
+                                assignee: res.fields.assignee.name,
                                 category: "red"
                             });
                         }
-                    } else { //since unresolved issues don't have resolution date we take current date
+                    } else { //since unresolved issues don't have resolution date we forward current date
                         if (checkDueDate(res.fields.duedate, new Date())) {
                             issues.push({
                                 key: res.key,
@@ -130,6 +185,7 @@ function getIssuesOfUser(user) {
                                 duedate: res.fields.duedate,
                                 resolution: res.fields.resolution, //just taking null
                                 resolutiondate: res.fields.resolutiondate,
+                                assignee: res.fields.assignee.name,
                                 category: "green"
                             });
                         } else {
@@ -141,6 +197,7 @@ function getIssuesOfUser(user) {
                                 duedate: res.fields.duedate,
                                 resolution: res.fields.resolution, //just taking null
                                 resolutiondate: res.fields.resolutiondate,
+                                assignee: res.fields.assignee.name,
                                 category: "red"
                             });
                         }
@@ -160,10 +217,10 @@ function getIssuesOfUser(user) {
 function checkDueDate(dueDate, resolutionDate) {
     var issueDueDate = new Date(dueDate);
     var issueResolutionDate = new Date(resolutionDate);
-    console.log(issueDueDate > issueResolutionDate);
+    //console.log(issueDueDate > issueResolutionDate);
     return (issueDueDate > issueResolutionDate);
 }
 
-//getUsers();
+getUsers();
 //getProjects();
-getIssuesOfUser("valentin");
+//getIssuesOfUser("valentin");
