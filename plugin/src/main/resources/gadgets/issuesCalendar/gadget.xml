@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
     <ModulePrefs
-            title="Issues Overview plugin"
-            directory_title="Issues Overview"
-            description="A plugin that displays issues of a project"
+            title="Issues Calendar plugin"
+            directory_title="Issues Calendar"
+            description="A plugin that displays issues on a calendar"
             author="Ivan Lukac"
             author_email="Ivan.Lukac@Sky.de"
             height="350">
@@ -29,62 +29,47 @@
     <Content
             type="html"
             view="profile">
-        <![CDATA[
-            
-  
-        
-        <!-- Required for the Atlassian gadget framework -->
+        <![CDATA[                
+            <!-- Required for the Atlassian gadget framework -->
             #requireResource("com.atlassian.gadgets.publisher:ajs-gadgets")
             #requireResource("com.atlassian.jira.gadgets:common")
 
-            #includeResources()
-  
-        
-        
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <!-- link rel="stylesheet" href="pluginStyle.css" -->
+            #includeResources()        
+            
+            <!-- Bootstrap CSS -->
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.0/main.min.css">
+            <!-- link rel="stylesheet" href="pluginStyle.css" -->
+
             <!-- Bootstrap JS + Requirements -->
             <script src="http://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
             <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.0/main.min.js"></script>
+
             <!-- [ETHICAL_SSE] You can add other libraries here, the same way as Bootstrap is added above -->
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <!-- %       [ETHICAL_SSE] Enter your HTML below       % -->
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:250px">
+            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:500px">
                 <div class="row justify-content-center" style="margin-top: 15px">
-                    <h4>Issues overview</h4>
+                    <h4>Issues Calendar</h4>
                 </div>
                 <div class="row justify-content-center" style="margin-top: 15px">
                     <select id="selectUser" onchange="getIssuesOfUser()">
-                        <option>Select the User</option>
+                        <option>admin</option>
                     </select>
                 </div>
-                <div class="row justify-content-center" style="margin-top: 15px">
-                    <table id="userIssuesTable" style="overflow: auto">
-                        <tr>
-                            <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspISSUE                        
-                            </th>
-                            <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspDUE DATE   
-                            </th>
-                            <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspCATEGORY
-                         </th>
-                        </tr>
-                    </table>
-                </div>
+                <div id='calendar' style="margin-top: 15px"></div>
             </div>
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <!-- %                End of your HTML                 % -->
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <!--
-                We initialize the global Atlassian Gadget object. This is important!
-                You may use it to initialize global variables as well (see "// Globals" below).
-                If you want to learn more: https://developer.atlassian.com/server/framework/gadgets/creating-a-gadget-javascript-object/
-            -->
+                    We initialize the global Atlassian Gadget object. This is important!
+                    You may use it to initialize global variables as well (see "// Globals" below).
+                    If you want to learn more: https://developer.atlassian.com/server/framework/gadgets/creating-a-gadget-javascript-object/
+                -->
             <script type="text/javascript">
                 var gadget = AJS.Gadget({
                     baseUrl: "__ATLASSIAN_BASE_URL__",
@@ -103,8 +88,9 @@
                 // Show a loading indicator while we run our script below
                 gadget.showLoading();
             </script>
+
             <!-- [ETHICAL_SSE] Your plugin logic is imported here -->
-            <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/issuesOverview.js"></script>
+            <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/issuesCalendar.js"></script>
             <!-- Remove the loading indicator as soon as the script above has terminated. -->
             <script type="text/javascript">
                 gadget.hideLoading();

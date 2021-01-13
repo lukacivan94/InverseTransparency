@@ -1,0 +1,6 @@
+#spacerbox {
+    margin-top: 15px;
+    height: 315px;
+    display: block;
+    overflow: auto;
+}

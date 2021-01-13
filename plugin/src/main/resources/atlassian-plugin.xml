@@ -27,6 +27,14 @@
     <param name="content-type" value="application/javascript" />
   </resource>
 
+  <resource type="download" name="issuesCalendar.js" location="js/issuesCalendar.js">
+    <param name="content-type" value="application/javascript" />
+  </resource>
+
+  <resource type="download" name="projectMostActive.js" location="js/projectMostActive.js">
+    <param name="content-type" value="application/javascript" />
+  </resource>
+
   <web-item name="myItem" i18n-name-key="transparenz-item.name" key="transparenz-item" section="system.top.navigation.bar" weight="1000">
     <description key="transparenz-item.description">The myItem Plugin</description>
     <label key="transparenz-item.label" />
@@ -45,5 +53,11 @@
   </gadget>
   <gadget name="Issues Overview" i18n-name-key="issues-plugin.name" key="issues-plugin" location="gadgets/issuesOverview/gadget.xml">
     <description key="issues-plugin.description">The Issues Overview plugin</description>
+  </gadget>
+  <gadget name="Issues Calendar" i18n-name-key="calendar-plugin.name" key="calendar-plugin" location="gadgets/issuesCalendar/gadget.xml">
+    <description key="calendar-plugin.description">The Issues Calendar plugin</description>
+  </gadget>
+  <gadget name="Project Most Active" i18n-name-key="active-plugin.name" key="active-plugin" location="gadgets/projectMostActive/gadget.xml">
+    <description key="active-plugin.description">The Project Most Active plugin</description>
   </gadget>
 </atlassian-plugin>

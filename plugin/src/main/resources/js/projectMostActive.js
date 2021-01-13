@@ -5,15 +5,10 @@
 
 // ------------------- Variables -----------------
 
-// JIRA queries
-// project = TP AND resolution = Unresolved AND assignee in (ivan)
-//http://localhost:2990/jira/browse/SP-1?jql=resolution%20%3D%20Unresolved%20AND%20assignee%20in%20(ivan)%20ORDER%20BY%20priority%20DESC%2C%20updated%20DESC
-///rest/api/2/user/search?username=.&startAt=0&maxResults=2000
-///rest/api/2/search?jql=assignee=currentuser()
-
-var projects;
+const projects = [];
 var currentProject;
 const users = [];
+const usersOfProjectIssues = [];
 var currentUser;
 const issues = [];
 
@@ -39,22 +34,11 @@ function getUsers() {
                         fullname: res.displayName
                     });
                 });
-                var select = document.getElementById("selectUser");
-                var options = users;
-
-                for (var i = 0; i < options.length; i++) {
-                    var opt = options[i];
-                    var el = document.createElement("option");
-                    el.textContent = opt.fullname;
-                    el.value = opt.key;
-                    select.appendChild(el);
-                }
-                //console.log("All users: " + JSON.stringify(resultJson));
-                //console.log("Users: " + JSON.stringify(users));
+                console.log("All users: " + JSON.stringify(resultJson));
+                console.log("Users: " + JSON.stringify(users));
             }
         });
 }
-
 
 /**
  * This function gets all projects and stores them in projects.
@@ -72,22 +56,33 @@ function getProjects() {
         })
         .then(function (resultJson) {
             if (resultJson !== undefined) {
-                projects = resultJson;
-                currentProject = projects[0].key;
-                console.log("Current project: " + currentProject);
-                console.log("All projects: " + JSON.stringify(projects));
+                resultJson.forEach(function (res) {
+                    projects.push({
+                        self: res.self,
+                        id: res.id,
+                        key: res.key,
+                        name: res.name
+                    });
+                });
+                var select = document.getElementById("selectProject");
+                var options = projects;
+
+                for (var i = 0; i < options.length; i++) {
+                    var opt = options[i];
+                    var el = document.createElement("option");
+                    el.textContent = opt.name;
+                    el.value = opt.key;
+                    select.appendChild(el);
+                }
             }
         });
 };
 
-/**
- * This function gets all issues from the user and stores them in issues.
- */
-function getIssuesOfUser() {
+function getIssuesOfProject() {
     issues.length = 0;
-    currentUser = document.getElementById('selectUser').value;
-    console.log("Current user is: " + currentUser);
-    fetch("/jira/rest/api/2/search?jql=assignee=" + currentUser)
+    currentProject = document.getElementById('selectProject').value;
+    console.log("Current project is: " + currentProject);
+    fetch("/jira/rest/api/2/search?jql=project=" + currentProject)
         .then(function (response) {
             if (response.ok) {
                 return response.json();
@@ -152,24 +147,36 @@ function getIssuesOfUser() {
                             });
                         }
                     }
-                });
-                console.log("There are " + issues.length + " issues: " + JSON.stringify(issues));
-                appendIssues(issues);
+                })
+                getUsersOfProjectIssues(issues);
+                console.log("These are the issues of " + currentProject + " project: " + JSON.stringify(issues));
             }
         });
-};
+}
 
+function getUsersOfProjectIssues(issues) {
+    for (i = 0; i < issues.length; i++) {
+        if (!usersOfProjectIssues.includes(issues[i].assignee)) {
+            usersOfProjectIssues.push(issues[i].assignee);
+        } else {
+            return;
+        }
+    }
+    console.log("Users of Project issues: " + usersOfProjectIssues);
+    return usersOfProjectIssues;
+}
 
-function appendIssues(issues) {
+//provide a list of users 
+function appendUsers(users) {
     //console.log("Within appendIssues function: " + issues.length);
-    var table = document.getElementById("userIssuesTable");
+    var table = document.getElementById("projectUsersTable");
 
-    // Clear the table from previous issues - anything but the header row
+    // Clear the table from previous users - anything but the header row
     for (var i = table.rows.length - 1; i > 0; i--) {
         table.deleteRow(i);
     };
 
-    issues.forEach(function (object) {
+    users.forEach(function (object) {
         //console.log("Within foreach:" + object.key);
         var tr = document.createElement("tr");
         if (object.category == "red") {
@@ -187,6 +194,7 @@ function appendIssues(issues) {
     //document.body.appendChild(table);
 }
 
+
 /**
  * This function checks if the issue Due Date has passed.
  * @params dueDate, resolutionDate of the issue
@@ -200,7 +208,8 @@ function checkDueDate(dueDate, resolutionDate) {
     return (issueDueDate > issueResolutionDate);
 }
 
+function getUsersOfProject() {
 
-getUsers();
-//getProjects();
-//getIssuesOfUser("valentin");
+}
+
+getProjects();

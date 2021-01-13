@@ -1,24 +1,19 @@
 /**
  * @file
- * Functionality of the issues overview dashboard plugin.
+ * Functionality of the issues calendar dashboard plugin.
  */
 
 // ------------------- Variables -----------------
-
-// JIRA queries
-// project = TP AND resolution = Unresolved AND assignee in (ivan)
-//http://localhost:2990/jira/browse/SP-1?jql=resolution%20%3D%20Unresolved%20AND%20assignee%20in%20(ivan)%20ORDER%20BY%20priority%20DESC%2C%20updated%20DESC
-///rest/api/2/user/search?username=.&startAt=0&maxResults=2000
-///rest/api/2/search?jql=assignee=currentuser()
 
 var projects;
 var currentProject;
 const users = [];
 var currentUser;
 const issues = [];
+const visibleIssues = [];
 
 /**
- * This function returns a list of all users and saves them in users array. 
+ * This function returns a list of all users and saves them in users. 
  */
 function getUsers() {
     fetch("/jira/rest/api/2/user/search?username=.&maxResults=2000")
@@ -53,112 +48,8 @@ function getUsers() {
                 //console.log("Users: " + JSON.stringify(users));
             }
         });
+
 }
-
-
-/**
- * This function gets all projects and stores them in projects.
- * The key of the first one gets stored in currentProject.
- */
-function getProjects() {
-    fetch("/jira/rest/api/2/project")
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                return undefined;
-            }
-        })
-        .then(function (resultJson) {
-            if (resultJson !== undefined) {
-                projects = resultJson;
-                currentProject = projects[0].key;
-                console.log("Current project: " + currentProject);
-                console.log("All projects: " + JSON.stringify(projects));
-            }
-        });
-};
-
-/**
- * This function gets all issues from the user and stores them in issues.
- */
-function getIssuesOfUser() {
-    issues.length = 0;
-    currentUser = document.getElementById('selectUser').value;
-    console.log("Current user is: " + currentUser);
-    fetch("/jira/rest/api/2/search?jql=assignee=" + currentUser)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                return undefined;
-            }
-        })
-        .then(function (resultJson) {
-            if (resultJson !== undefined) {
-                resultJson.issues.forEach(function (res) {
-                    if (res.fields.resolution !== null) {
-                        if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution.name, //taking name if not null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "green"
-                            });
-                        } else {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution.name, //taking name if not null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "red"
-                            });
-                        }
-                    } else { //since unresolved issues don't have resolution date we forward current date
-                        if (checkDueDate(res.fields.duedate, new Date())) {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution, //just taking null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "green"
-                            });
-                        } else {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution, //just taking null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "red"
-                            });
-                        }
-                    }
-                });
-                console.log("There are " + issues.length + " issues: " + JSON.stringify(issues));
-                appendIssues(issues);
-            }
-        });
-};
-
 
 function appendIssues(issues) {
     //console.log("Within appendIssues function: " + issues.length);
@@ -188,11 +79,95 @@ function appendIssues(issues) {
 }
 
 /**
+ * This function gets all issues from the user and stores them in issues.
+ * @param {String} user name of the user
+ */
+function getIssuesOfUser() {
+    issues.length = 0;
+    currentUser = document.getElementById('selectUser').value;
+    console.log("Current user is: " + currentUser);
+    fetch("/jira/rest/api/2/search?jql=assignee=" + currentUser)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                resultJson.issues.forEach(function (res) {
+                    if (res.fields.resolution !== null) {
+                        if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
+                            issues.push({
+                                key: res.key,
+                                issueType: res.fields.issuetype.name,
+                                summary: res.fields.summary,
+                                project: res.fields.project.key,
+                                duedate: res.fields.duedate,
+                                resolution: res.fields.resolution.name, //taking name if not null
+                                resolutiondate: res.fields.resolutiondate,
+                                assignee: res.fields.assignee.name,
+                                category: "green",
+                                visible: false
+                            });
+                        } else {
+                            issues.push({
+                                key: res.key,
+                                issueType: res.fields.issuetype.name,
+                                summary: res.fields.summary,
+                                project: res.fields.project.key,
+                                duedate: res.fields.duedate,
+                                resolution: res.fields.resolution.name, //taking name if not null
+                                resolutiondate: res.fields.resolutiondate,
+                                assignee: res.fields.assignee.name,
+                                category: "red",
+                                visible: false
+                            });
+                        }
+                    } else { //since unresolved issues don't have resolution date we forward current date
+                        if (checkDueDate(res.fields.duedate, new Date())) {
+                            issues.push({
+                                key: res.key,
+                                issueType: res.fields.issuetype.name,
+                                summary: res.fields.summary,
+                                project: res.fields.project.key,
+                                duedate: res.fields.duedate,
+                                resolution: res.fields.resolution, //just taking null
+                                resolutiondate: res.fields.resolutiondate,
+                                assignee: res.fields.assignee.name,
+                                category: "green",
+                                visible: false
+                            });
+                        } else {
+                            issues.push({
+                                key: res.key,
+                                issueType: res.fields.issuetype.name,
+                                summary: res.fields.summary,
+                                project: res.fields.project.key,
+                                duedate: res.fields.duedate,
+                                resolution: res.fields.resolution, //just taking null
+                                resolutiondate: res.fields.resolutiondate,
+                                assignee: res.fields.assignee.name,
+                                category: "red",
+                                visible: false
+                            });
+                        }
+                    }
+                });
+                console.log("There are " + issues.length + " issues: " + JSON.stringify(issues));
+                buildCalendar(issues);
+            }
+        });
+
+};
+
+/**
  * This function checks if the issue Due Date has passed.
- * @params dueDate, resolutionDate of the issue
+ * @param {String} date due date of the issue
  * returns true if due date comes after resolution date
  */
-
 function checkDueDate(dueDate, resolutionDate) {
     var issueDueDate = new Date(dueDate);
     var issueResolutionDate = new Date(resolutionDate);
@@ -200,7 +175,80 @@ function checkDueDate(dueDate, resolutionDate) {
     return (issueDueDate > issueResolutionDate);
 }
 
+/**
+ * This function builds the Calendar and displays issues of the selected user
+ */
+function buildCalendar(issues) {
+    //document.addEventListener('DOMContentLoaded', function () {//});
+    var calendarEl = document.getElementById('calendar');
+
+    var events = issues.map(issue => {
+        return {
+            title: issue.key,
+            start: issue.duedate,
+            color: issue.category
+        }
+    })
+
+    console.log("Issues within buildCalendar: " + JSON.stringify(issues));
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        initialDate: '2021-01-07',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: events,
+        eventClick: function (info) {
+            requestView(info)
+        },
+        eventMouseEnter: function (mouseEnterInfo) {
+            displayHoverMessage(mouseEnterInfo)
+        }
+    });
+
+    calendar.render();
+
+    console.log("Calendar has been built");
+}
+
+function requestView(info) {
+
+    visibleIssues.push(({
+        key: "SP-2",
+        visible: true
+    }))
+    if (checkIfVisible(info.event.title)) {
+        displayVisibleIssue(info.event.title);
+    } else {
+        console.log("View has been requested for issue: " + info.event.title);
+        alert("View has been requested for issue: " + info.event.title);
+
+        // change the border color just for fun
+        info.el.style.borderColor = 'red';
+    }
+}
+
+function displayHoverMessage() {
+    console.log("Hover message is displaying");
+}
+
+function checkIfVisible(issueKey) {
+    var i;
+    for (i = 0; i < visibleIssues.length; i++) {
+        if (visibleIssues[i].key === issueKey) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function displayVisibleIssue(issueKey) {
+    console.log("Here is the " + issueKey + " details:");
+}
 
 getUsers();
 //getProjects();
-//getIssuesOfUser("valentin");
+getIssuesOfUser();
