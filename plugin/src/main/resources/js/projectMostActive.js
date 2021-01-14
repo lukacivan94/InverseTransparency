@@ -9,6 +9,7 @@ const projects = [];
 var currentProject;
 const users = [];
 const usersOfProjectIssues = [];
+const uniqueProjectUsers = [];
 var currentUser;
 const issues = [];
 
@@ -78,6 +79,9 @@ function getProjects() {
         });
 };
 
+
+// The assumption is that every issue has Assignee
+// otherwise null pointer error pops up
 function getIssuesOfProject() {
     issues.length = 0;
     currentProject = document.getElementById('selectProject').value;
@@ -148,52 +152,81 @@ function getIssuesOfProject() {
                         }
                     }
                 })
-                getUsersOfProjectIssues(issues);
-                console.log("These are the issues of " + currentProject + " project: " + JSON.stringify(issues));
+                getUsersOfProjectIssues();
+                console.log("There are " + issues.length + " issues of " + currentProject + " project: " + JSON.stringify(issues));
             }
         });
 }
 
-function getUsersOfProjectIssues(issues) {
-    for (i = 0; i < issues.length; i++) {
-        if (!usersOfProjectIssues.includes(issues[i].assignee)) {
-            usersOfProjectIssues.push(issues[i].assignee);
-        } else {
-            return;
-        }
-    }
-    console.log("Users of Project issues: " + usersOfProjectIssues);
-    return usersOfProjectIssues;
+/*  i.e.
+    SP-1: admin,
+    SP-2: valentin,
+    SP-3: ivan,
+    SP-4: valentin
+    usersOfProjectIssues = [admin, valentin, ivan]
+*/
+function getUsersOfProjectIssues() {
+    usersOfProjectIssues.length = 0; //clearing earlier project users
+    issues.forEach(function (issue) {
+        usersOfProjectIssues.push(
+            issue.assignee
+        )
+    })
+    uniqueProjectUsers.length = 0; //clearing earlier project users
+    //clearing duplicates
+    $.each(usersOfProjectIssues, function (i, el) {
+        if ($.inArray(el, uniqueProjectUsers) === -1) uniqueProjectUsers.push(el);
+    });
+    console.log("Users of project: " + JSON.stringify(usersOfProjectIssues));
+    console.log("Unique Users of project: " + JSON.stringify(uniqueProjectUsers));
+    appendUsers();
 }
 
 //provide a list of users 
-function appendUsers(users) {
-    //console.log("Within appendIssues function: " + issues.length);
+function appendUsers() {
+    console.log("Within appendUsers function: " + uniqueProjectUsers.length);
     var table = document.getElementById("projectUsersTable");
 
     // Clear the table from previous users - anything but the header row
     for (var i = table.rows.length - 1; i > 0; i--) {
         table.deleteRow(i);
     };
-
-    users.forEach(function (object) {
-        //console.log("Within foreach:" + object.key);
+    uniqueProjectUsers.forEach(function (user) {
+        var sortedIssues = sortUserIssues(user);
+        console.log("[ISSUES]: " + JSON.stringify(sortedIssues));
         var tr = document.createElement("tr");
-        if (object.category == "red") {
-            tr.innerHTML = "<td style='text-align:center'>" + object.key + "</td>" +
-                "<td style='text-align:center'>" + object.duedate + "</td>" +
-                "<td style='text-align:center; background-color:#FF6A4B'>" + object.category + "</td>";
-        } else {
-            tr.innerHTML = "<td style='text-align:center'>" + object.key + "</td>" +
-                "<td style='text-align:center'>" + object.duedate + "</td>" +
-                "<td style='text-align:center; background-color:#DBFFAB'>" + object.category + "</td>";
-        }
+
+        tr.innerHTML = "<td style='text-align:center'>" + user + "</td>" +
+            "<td style='text-align:center; background-color:#DBFFAB''>" + sortedIssues.numberOfGreenIssues + "</td>" +
+            "<td style='text-align:center; background-color:#FF6A4B'>" + sortedIssues.numberOfRedIssues + "</td>";
+        ;
 
         table.appendChild(tr);
     });
-    //document.body.appendChild(table);
 }
 
+function sortUserIssues(user) {
+    //var sortedIssues = [];
+    var numberOfRedIssues = 0;
+    var numberOfGreenIssues = 0;
+    for (let i = 0; i < issues.length; i++) {
+        if (issues[i].assignee == user) {
+            if (issues[i].category == "red") {
+                numberOfRedIssues++;
+            } else {
+                numberOfGreenIssues++;
+            }
+        }
+    }
+    // sortedIssues.push({
+        
+    // })
+    return {
+        user: user,
+        numberOfRedIssues: numberOfRedIssues,
+        numberOfGreenIssues: numberOfGreenIssues
+    };
+}
 
 /**
  * This function checks if the issue Due Date has passed.
@@ -213,3 +246,4 @@ function getUsersOfProject() {
 }
 
 getProjects();
+//getUsers();
