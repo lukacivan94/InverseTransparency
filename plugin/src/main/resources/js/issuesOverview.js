@@ -98,7 +98,13 @@ function getIssuesOfUser() {
         })
         .then(function (resultJson) {
             if (resultJson !== undefined) {
+                console.log("[ISSUES]: " + JSON.stringify(resultJson));
                 resultJson.issues.forEach(function (res) {
+                    // console.log("[ISSUE VIEWERS]: " + JSON.stringify(res.fields.customfield_10000));
+                    // console.log("[ISSUE REQUESTORS]: " + JSON.stringify(res.fields.customfield_10001));
+                    // res.fields.customfield_10000.forEach(function (viewer){
+                    //     console.log("Viewer name: " + viewer.name);
+                    // })
                     if (res.fields.resolution !== null) {
                         if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
                             issues.push({
@@ -110,7 +116,9 @@ function getIssuesOfUser() {
                                 resolution: res.fields.resolution.name, //taking name if not null
                                 resolutiondate: res.fields.resolutiondate,
                                 assignee: res.fields.assignee.name,
-                                category: "green"
+                                category: "green",
+                                viewers: res.fields.customfield_10000,
+                                requestors: res.fields.customfield_10001
                             });
                         } else {
                             issues.push({
@@ -122,7 +130,9 @@ function getIssuesOfUser() {
                                 resolution: res.fields.resolution.name, //taking name if not null
                                 resolutiondate: res.fields.resolutiondate,
                                 assignee: res.fields.assignee.name,
-                                category: "red"
+                                category: "red",
+                                viewers: res.fields.customfield_10000,
+                                requestors: res.fields.customfield_10001
                             });
                         }
                     } else { //since unresolved issues don't have resolution date we forward current date
@@ -136,7 +146,9 @@ function getIssuesOfUser() {
                                 resolution: res.fields.resolution, //just taking null
                                 resolutiondate: res.fields.resolutiondate,
                                 assignee: res.fields.assignee.name,
-                                category: "green"
+                                category: "green",
+                                viewers: res.fields.customfield_10000,
+                                requestors: res.fields.customfield_10001
                             });
                         } else {
                             issues.push({
@@ -148,7 +160,9 @@ function getIssuesOfUser() {
                                 resolution: res.fields.resolution, //just taking null
                                 resolutiondate: res.fields.resolutiondate,
                                 assignee: res.fields.assignee.name,
-                                category: "red"
+                                category: "red",
+                                viewers: res.fields.customfield_10000,
+                                requestors: res.fields.customfield_10001
                             });
                         }
                     }

@@ -1,153 +1,147 @@
 /**
  * @file
- * Functionality of the ethical analysis dashboard plugin.
+ * Functionality of the issues overview dashboard plugin.
  */
 
+// ------------------- Variables -----------------
 
-/** [ETHICAL_SSE] Example function how to use fetch() to retrieve data. */
-function fetchData() {
-    // Send some data in your request
-    var formData = new FormData();
-    formData.append("app", "jira");
+var projects;
+var currentProject;
+const users = [];
+var currentUser;
+const currentUsers = [];
+const issues = [];
+const viewers = [];
+const requestors = [];
 
-    // Send a "POST" (may also be e.g. "GET") request
-    var fetchBody = {
-        method: "POST",
-        mode: "no-cors",
-        body: formData
-    };
-
-    fetch("http://httpbin.org/post", fetchBody);
-};
-
-
-/** [ETHICAL_SSE] Example function showing how to access the Jira API.
-    Also an example that shows how to call a function only *after* a specific field has been set. */
-function getCurrentlyLoggedInUserThen(execute_function) {
-    // Recursion end condition: currentUser is set
-    if (currentUser !== undefined && currentUser !== "") {
-        execute_function();
-        return;
-    }
-
-    // Access the Jira API
-    fetch("/jira/rest/auth/1/session")
-        .then(function (result) {
-            if (result.ok) {
-                // Successful request: Return the JSON payload
-                return result.json();
+/**
+ * This function gets all issues from the user and stores them in issues.
+ */
+function getLoggedInUser() {
+    fetch("/jira/rest/auth/latest/session")
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
             } else {
-                // Request error: Log and return undefined
                 console.error("JIRA API call failed");
                 return undefined;
             }
         })
         .then(function (resultJson) {
-            if (resultJson !== undefined && resultJson !== "") {
-                // In JavaScript, you can directly access JSON properties
-                currentUser = resultJson.name;
-
-                // Recursion / reentrance
-                // After we have finished, we recursively call this function again,
-                // this time calling the function to execute. Why this two-step
-                // process? If we call this function again later, it will
-                // immediately call the given function.
-                getCurrentlyLoggedInUserThen(execute_function);
+            if (resultJson !== undefined) {
+                currentUsers.push({ //put back to current user
+                    name: resultJson.name
+                })
+                console.log("Logged in user is: " + currentUsers[0].name);
+                getIssuesOfUser(currentUsers);
             }
-
-            // In case we did not receive a valid user, we don't execute the function.
-            return;
         });
-
-    // Recursion / reentrance happens in the callback above
-    return;
 };
-
-
-// [ETHICAL_SSE] Below are three example functions how to create HTML elements in JavaScript
-
 
 /**
- * Creates an HTML <div> element styled as an alert with the given level and text.
- * 
- * @param {String} warning_level
- *   Either "warning" or "danger"
- * @param {Array} warning_text_children
- *   The HTML elements describing the warning text.
+ * This function gets all issues from the user and stores them in issues.
  */
-function createHtmlAlert(warning_level, warning_text_children) {
-    if (["warning", "danger"].indexOf(warning_level) < 0) {
-        throw "warning_level has to be either \"warning\" or \"danger\"";
-    }
+function getIssuesOfUser(users) {
+    console.log("Current user is: " + users[0].name);
+    fetch("/jira/rest/api/2/search?jql=assignee=" + users[0].name)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log("Issues here: " + JSON.stringify(resultJson));
+                resultJson.issues.forEach(function (res) {
+                    issues.push({
+                        key: res.key,
+                        viewers: res.fields.customfield_10000,
+                        requestors: res.fields.customfield_10001
+                    });
+                });
+                var select = document.getElementById("selectIssue");
+                var options = issues;
 
-    var alert = document.createElement("DIV");
-    alert.className = "alert alert-" + warning_level;
-    alert.setAttribute("role", "alert");
-    warning_text_children.forEach(function (warning_text_child) {
-        alert.appendChild(warning_text_child);
-    });
+                for (var i = 0; i < options.length; i++) {
+                    var opt = options[i];
+                    var el = document.createElement("option");
+                    el.textContent = opt.key;
+                    el.value = opt.key;
+                    select.appendChild(el);
+                }
 
-    return alert;
+            }
+        });
 };
 
+function getIssueDetails() {
+    issueKey = document.getElementById('selectIssue').value;
+    fetch("/jira/rest/api/2/issue/" + issueKey)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log("Issue details here: " + JSON.stringify(resultJson));
+                resultJson.fields.customfield_10000.forEach(function (res) {
+                    viewers.push({
+                        name: res.name
+                    })
+                })
+                console.log("Viewers here: " + JSON.stringify(viewers));
+
+            }
+        });
+    appendIssueDetails(viewers);
+}
+
+//
+function appendIssueDetails(viewers) {
+    //console.log("Within appendIssues function: " + issues.length);
+    var table = document.getElementById("userIssueTable");
+
+    // Clear the table from previous issues - anything but the header row
+    for (var i = table.rows.length - 1; i > 0; i--) {
+        table.deleteRow(i);
+    };
+    console.log("Viewers here: " + JSON.stringify(viewers));
+
+    viewers.forEach(function (object) {
+        //console.log("Within foreach:" + object.key);
+        var tr = document.createElement("tr");
+
+        tr.innerHTML = "<td style='text-align:center'>" + object.name + "</td>" +
+            "<td style='text-align:center'>" + object.name + "</td>" +
+            "<td style='text-align:center; background-color:#FF6A4B'>" + object.name + "</td>";
+
+
+        table.appendChild(tr);
+    });
+    //document.body.appendChild(table);
+}
 
 /**
- * Creates an HTML <a> element linking to the given user.
- * 
- * @param {String} username
- *   The username (may not contain "@")
+ * This function checks if the issue Due Date has passed.
+ * @params dueDate, resolutionDate of the issue
+ * returns true if due date comes after resolution date
  */
-function createUserLink(username) {
-    if (username.includes("@")) {
-        throw "user_name may not contain \"@\"";
-    }
 
-    var a = document.createElement("A");
-    a.setAttribute("target", "_parent"); // This ensures that we open the relative link in Jira, not in our plugin.
-    a.setAttribute("href", "/jira/secure/ViewProfile.jspa?name=" + username);
-    a.className = "alert-link";
-    a.innerHTML = "@" + username;
-
-    return a;
-};
+function checkDueDate(dueDate, resolutionDate) {
+    var issueDueDate = new Date(dueDate);
+    var issueResolutionDate = new Date(resolutionDate);
+    //console.log(issueDueDate > issueResolutionDate);
+    return (issueDueDate > issueResolutionDate);
+}
 
 
-/** Creates an HTML <span> element containing the given text. */
-function createSpan(text) {
-    var s = document.createElement("SPAN");
-    s.innerHTML = text;
-    return s;
-};
-
-
-/** Here, we simply populate the interface with some dummy elements. */
-function populate() {
-    // 1. Load warnings
-    console.warn("WARNINGS ARE CURRENTLY FAKE!");
-    var warnings = [
-        { level: "danger", children: [createSpan("(!) Debug code – warnings are fake (!)")] },
-        { level: "warning", children: [createUserLink("frauke"), createSpan(" worked overtime three days in a row.")] },
-        { level: "danger", children: [createUserLink("admin"), createSpan(" has violated the policy \"no-work-during-holidays\"!")] },
-        { level: "danger", children: [createUserLink("frauke"), createSpan(" worked overtime five days in a row.")] },
-        { level: "warning", children: [createSpan("There are 10 open and overdue tasks!")] },
-    ];
-
-    // Select the HTML element with the ID "alertlist"
-    var alertlist = document.querySelector("#alertlist");
-
-    // 2. Remove "Loading..." placeholder
-    if (alertlist.childElementCount != 1) {
-        throw "Invalid DOM state!";
-    }
-    alertlist.removeChild(alertlist.children[0]);
-
-    // 3. Populate interface
-    warnings.forEach(function (warning) {
-        var warning_alert = createHtmlAlert(warning.level, warning.children);
-        alertlist.appendChild(warning_alert);
-    });
-};
-
-// [ETHICAL_SSE] If you want to immediately run a function when importing the JavaScript, simply trigger it here.
-// Alternatively, you may also let them be called from the HTML, e.g. when pressing a button: https://www.w3schools.com/jsref/event_onclick.asp
-populate();
+getLoggedInUser();
+//getProjects();
+//getIssuesOfUser();

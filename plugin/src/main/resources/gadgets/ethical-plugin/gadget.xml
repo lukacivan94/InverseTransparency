@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
     <ModulePrefs
-            title="Ethical Analysis Plugins"
-            directory_title="Practicum Ethical SSE"
-            description="An ethically deliberated plugin analyzing user data"
-            author="AUTHOR"
+            title="Transparency Dashboard"
+            directory_title="Transparency Dashboard Plugin"
+            description="Plugin that gives control to data privacy"
+            author="Ivan Lukac"
             author_email=""
             height="350">
         <Optional feature="gadget-directory">
@@ -50,12 +50,29 @@
             <!-- %       [ETHICAL_SSE] Enter your HTML below       % -->
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-            <div id="spacerbox" class="container-fluid" style="margin-top: 15px">
-                <div class="row justify-content-center">
-                    <h4>Scope: Today, All</h4>
+            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:250px">
+                <div class="row justify-content-center" style="margin-top: 15px">
+                    <h4>Control Dashboard</h4>
                 </div>
-                <div id="alertlist">
-                    <div class="alert alert-dark" role="alert">Loading...</div>
+                <div class="row justify-content-center" style="margin-top: 15px">
+                    <select id="selectIssue" onchange="getIssueDetails()">
+                        <option>Select the Issue</option>
+                    </select>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 15px">
+                    <table id="userIssueTable" style="overflow: auto">
+                        <tr>
+                            <th>
+                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspISSUE                        
+                            </th>
+                            <th>
+                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspViewers  
+                            </th>
+                            <th>
+                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspRequestors
+                         </th>
+                        </tr>
+                    </table>
                 </div>
             </div>
 
