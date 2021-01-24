@@ -104,7 +104,10 @@
                                 </th>
                                 <th>
                                     <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspRED ISSUES
-                            </th>
+                                </th>
+                                <th>
+                                    <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspSUCCESS RATE
+                                </th>
                             </tr>
                         </table>
                     </div>

@@ -14,10 +14,11 @@
 const projects = [];
 var currentProject;
 const users = [];
-const usersOfProjectIssues = [];
+const usersOfProject = [];
 const uniqueProjectUsers = [];
 var currentUser;
-const issues = [];
+const issuesOfUser = [];
+const issuesOfProject = [];
 
 /**
  * This function returns a list of all users and saves them in users array. 
@@ -99,7 +100,7 @@ function getProjects() {
 // The assumption is that every issue has Assignee
 // otherwise null pointer error pops up
 function getIssuesOfProject() {
-    issues.length = 0;
+    issuesOfProject.length = 0;
     currentProject = document.getElementById('selectProject').value;
     console.log("Current project is: " + currentProject);
     fetch("/jira/rest/api/2/search?jql=project=" + currentProject)
@@ -114,62 +115,10 @@ function getIssuesOfProject() {
         .then(function (resultJson) {
             if (resultJson !== undefined) {
                 resultJson.issues.forEach(function (res) {
-                    if (res.fields.resolution !== null) {
-                        if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution.name, //taking name if not null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "green"
-                            });
-                        } else {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution.name, //taking name if not null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "red"
-                            });
-                        }
-                    } else { //since unresolved issues don't have resolution date we forward current date
-                        if (checkDueDate(res.fields.duedate, new Date())) {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution, //just taking null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "green"
-                            });
-                        } else {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution, //just taking null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "red"
-                            });
-                        }
-                    }
+                    buildIssues(res, issuesOfProject);
                 })
-                getUsersOfProjectIssues();
-                console.log("There are " + issues.length + " issues of " + currentProject + " project: " + JSON.stringify(issues));
+                getUsersOfProject();
+                console.log("There are " + issuesOfProject.length + " issues of " + currentProject + " project: " + JSON.stringify(issuesOfProject));
             }
         });
 }
@@ -180,21 +129,21 @@ function getIssuesOfProject() {
     SP-2: valentin,
     SP-3: ivan,
     SP-4: valentin
-    usersOfProjectIssues = [admin, valentin, ivan]
+    usersOfProject = [admin, valentin, ivan]
 */
-function getUsersOfProjectIssues() {
-    usersOfProjectIssues.length = 0; //clearing earlier project users
-    issues.forEach(function (issue) {
-        usersOfProjectIssues.push(
+function getUsersOfProject() {
+    usersOfProject.length = 0; //clearing previous project users
+    issuesOfProject.forEach(function (issue) {
+        usersOfProject.push(
             issue.assignee
         )
     })
-    uniqueProjectUsers.length = 0; //clearing earlier project users
+    uniqueProjectUsers.length = 0; //clearing previous project users
     //clearing duplicates
-    $.each(usersOfProjectIssues, function (i, el) {
+    $.each(usersOfProject, function (i, el) {
         if ($.inArray(el, uniqueProjectUsers) === -1) uniqueProjectUsers.push(el);
     });
-    console.log("Users of project: " + JSON.stringify(usersOfProjectIssues));
+    console.log("Users of project: " + JSON.stringify(usersOfProject));
     console.log("Unique Users of project: " + JSON.stringify(uniqueProjectUsers));
     appendUsers();
 }
@@ -215,33 +164,32 @@ function appendUsers() {
 
         tr.innerHTML = "<td style='text-align:center'>" + user + "</td>" +
             "<td style='text-align:center; background-color:#DBFFAB''>" + sortedIssues.numberOfGreenIssues + "</td>" +
-            "<td style='text-align:center; background-color:#FF6A4B'>" + sortedIssues.numberOfRedIssues + "</td>";
-        ;
-
+            "<td style='text-align:center; background-color:#FF6A4B'>" + sortedIssues.numberOfRedIssues + "</td>" +
+            "<td style='text-align:center; background-color:#FF6A4B'>" + sortedIssues.successRate + "</td>";
         table.appendChild(tr);
     });
 }
 
 function sortUserIssues(user) {
-    //var sortedIssues = [];
     var numberOfRedIssues = 0;
     var numberOfGreenIssues = 0;
-    for (let i = 0; i < issues.length; i++) {
-        if (issues[i].assignee == user) {
-            if (issues[i].category == "red") {
+    for (let i = 0; i < issuesOfProject.length; i++) {
+        if (issuesOfProject[i].assignee == user) {
+            if (issuesOfProject[i].category == "red") {
                 numberOfRedIssues++;
             } else {
                 numberOfGreenIssues++;
             }
         }
     }
-    // sortedIssues.push({
-        
-    // })
+    var totalIssues = numberOfGreenIssues + numberOfRedIssues;
+    var successRate = Math.round(numberOfGreenIssues / totalIssues * 100) + "%";
+    console.log("[SUCCESS RATE]: " + successRate);
     return {
         user: user,
         numberOfRedIssues: numberOfRedIssues,
-        numberOfGreenIssues: numberOfGreenIssues
+        numberOfGreenIssues: numberOfGreenIssues,
+        successRate: successRate
     };
 }
 
@@ -249,7 +197,7 @@ function sortUserIssues(user) {
  * This function gets all issues from the user and stores them in issues.
  */
 function getIssuesOfUser() {
-    issues.length = 0;
+    issuesOfUser.length = 0;
     currentUser = document.getElementById('selectUser').value;
     console.log("Current user is: " + currentUser);
     fetch("/jira/rest/api/2/search?jql=assignee=" + currentUser)
@@ -264,76 +212,79 @@ function getIssuesOfUser() {
         .then(function (resultJson) {
             if (resultJson !== undefined) {
                 console.log("[ISSUES]: " + JSON.stringify(resultJson));
-                resultJson.issues.forEach(function (res) {
-                    if (res.fields.resolution !== null) {
-                        if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution.name, //taking name if not null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "green",
-                                viewers: res.fields.customfield_10000,
-                                requestors: res.fields.customfield_10001
-                            });
-                        } else {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution.name, //taking name if not null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "red",
-                                viewers: res.fields.customfield_10000,
-                                requestors: res.fields.customfield_10001
-                            });
-                        }
-                    } else { //since unresolved issues don't have resolution date we forward current date
-                        if (checkDueDate(res.fields.duedate, new Date())) {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution, //just taking null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "green",
-                                viewers: res.fields.customfield_10000,
-                                requestors: res.fields.customfield_10001
-                            });
-                        } else {
-                            issues.push({
-                                key: res.key,
-                                issueType: res.fields.issuetype.name,
-                                summary: res.fields.summary,
-                                project: res.fields.project.key,
-                                duedate: res.fields.duedate,
-                                resolution: res.fields.resolution, //just taking null
-                                resolutiondate: res.fields.resolutiondate,
-                                assignee: res.fields.assignee.name,
-                                category: "red",
-                                viewers: res.fields.customfield_10000,
-                                requestors: res.fields.customfield_10001
-                            });
-                        }
-                    }
+                resultJson.issues.forEach(function (res){
+                    buildIssues(res, issuesOfUser);
                 });
-                console.log("There are " + issues.length + " issues: " + JSON.stringify(issues));
-                appendIssues(issues);
-                buildCalendar(issues);
+                console.log("There are " + issuesOfUser.length + " issues: " + JSON.stringify(issuesOfUser));
+                appendIssues(issuesOfUser);
+                
             }
         });
 };
 
+function buildIssues(res, issues) {
+    if (res.fields.resolution !== null) {
+        if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
+            issues.push({
+                key: res.key,
+                issueType: res.fields.issuetype.name,
+                summary: res.fields.summary,
+                project: res.fields.project.key,
+                duedate: res.fields.duedate,
+                resolution: res.fields.resolution.name, //taking name if not null
+                resolutiondate: res.fields.resolutiondate,
+                assignee: res.fields.assignee.name,
+                category: "green",
+                //viewers: res.fields.customfield_10000,
+                //requestors: res.fields.customfield_10001
+            });
+        } else {
+            issues.push({
+                key: res.key,
+                issueType: res.fields.issuetype.name,
+                summary: res.fields.summary,
+                project: res.fields.project.key,
+                duedate: res.fields.duedate,
+                resolution: res.fields.resolution.name, //taking name if not null
+                resolutiondate: res.fields.resolutiondate,
+                assignee: res.fields.assignee.name,
+                category: "red",
+                //viewers: res.fields.customfield_10000,
+                //requestors: res.fields.customfield_10001
+            });
+        }
+    } else { //since unresolved issues don't have resolution date we forward current date
+        if (checkDueDate(res.fields.duedate, new Date())) {
+            issues.push({
+                key: res.key,
+                issueType: res.fields.issuetype.name,
+                summary: res.fields.summary,
+                project: res.fields.project.key,
+                duedate: res.fields.duedate,
+                resolution: res.fields.resolution, //just taking null
+                resolutiondate: res.fields.resolutiondate,
+                assignee: res.fields.assignee.name,
+                category: "green",
+                //viewers: res.fields.customfield_10000,
+                //requestors: res.fields.customfield_10001
+            });
+        } else {
+            issues.push({
+                key: res.key,
+                issueType: res.fields.issuetype.name,
+                summary: res.fields.summary,
+                project: res.fields.project.key,
+                duedate: res.fields.duedate,
+                resolution: res.fields.resolution, //just taking null
+                resolutiondate: res.fields.resolutiondate,
+                assignee: res.fields.assignee.name,
+                category: "red",
+                //viewers: res.fields.customfield_10000,
+                //requestors: res.fields.customfield_10001
+            });
+        }
+    }
+}
 
 function appendIssues(issues) {
     //console.log("Within appendIssues function: " + issues.length);
@@ -359,7 +310,6 @@ function appendIssues(issues) {
 
         table.appendChild(tr);
     });
-    //document.body.appendChild(table);
 }
 
 
@@ -448,6 +398,7 @@ function switchViews() {
             $("#selectProjectDiv").hide();
             $("#selectUserDiv").show();
             $("#viewSelector").html('<a href="#" class="listView">list view</a> | calendar view | <a href="#" class="projectView">project view</a>');
+            buildCalendar(issuesOfUser);
         }
         if ($(this).hasClass("listView")) {
             $("#listView").show();
