@@ -50,27 +50,48 @@
             <!-- %       [ETHICAL_SSE] Enter your HTML below       % -->
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:250px">
+            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:380px">
                 <div class="row justify-content-center" style="margin-top: 15px">
                     <h4>Control Dashboard</h4>
                 </div>
                 <div class="row justify-content-center" style="margin-top: 15px">
+                    <h5>My Issues</h5>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 5px">
                     <select id="selectIssue" onchange="getIssueDetails()">
                         <option>Select the Issue</option>
                     </select>
                 </div>
                 <div class="row justify-content-center" style="margin-top: 15px">
-                    <table id="userIssueTable" style="overflow: auto">
+                    <h5>Issue Viewers</h5>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 5px">
+                    <table id="issueViewersTable" style="overflow: auto">
                         <tr>
                             <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspISSUE                        
+                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspNAME
                             </th>
                             <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspViewers  
+                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspACTION
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 15px">
+                    <h5>Issue Requestors</h5>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 5px">
+                    <table id="issueRequestorsTable" style="overflow: auto">
+                        <tr>
+                            <th>
+                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspNAME
                             </th>
                             <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspRequestors
-                         </th>
+                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspACTION 1
+                            </th>
+                            <th>
+                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspACTION 2
+                            </th>
                         </tr>
                     </table>
                 </div>

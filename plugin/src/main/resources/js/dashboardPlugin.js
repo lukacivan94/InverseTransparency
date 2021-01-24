@@ -5,17 +5,65 @@
 
 // ------------------- Variables -----------------
 
-var projects;
-var currentProject;
 const users = [];
 var currentUser;
-const currentUsers = [];
 const issues = [];
 const viewers = [];
 const requestors = [];
 
+
+function acceptRequestor() {
+    console.log("acceptRequestor method called");
+    var formData = {
+        "update": {
+            "customfield_10000": [{ "add": { "name": "Stefan" } }]
+        }
+    }
+
+    var fetchBody = {
+        method: "PUT",
+        headers: {
+            Authorization: "Basic " + btoa("admin:admin"),
+            "Content-Type": "application/json"
+        },
+        body: {
+            "update": {
+                "customfield_10000": [{ "add": { "name": "Stefan" } }]
+            }
+        }
+    };
+    fetch("/jira/rest/api/2/issue/TP-3/editmeta")
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                console.log("[ERROR]: " + response.json())
+                return undefined;
+            }
+        }).then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log("Answer: " + JSON.stringify(resultJson));
+            }
+        });
+    fetch("/jira/rest/api/2/issue/TP-3", fetchBody)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        }).then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log("Answer: " + JSON.stringify(resultJson));
+            }
+        });
+};
+
+
 /**
- * This function gets all issues from the user and stores them in issues.
+ * This function gets the name of the logged in user and  stores it in current user
  */
 function getLoggedInUser() {
     fetch("/jira/rest/auth/latest/session")
@@ -29,11 +77,9 @@ function getLoggedInUser() {
         })
         .then(function (resultJson) {
             if (resultJson !== undefined) {
-                currentUsers.push({ //put back to current user
-                    name: resultJson.name
-                })
-                console.log("Logged in user is: " + currentUsers[0].name);
-                getIssuesOfUser(currentUsers);
+                currentUser = resultJson.name
+                console.log("Logged in user is: " + currentUser);
+                getIssuesOfUser(currentUser);
             }
         });
 };
@@ -41,9 +87,9 @@ function getLoggedInUser() {
 /**
  * This function gets all issues from the user and stores them in issues.
  */
-function getIssuesOfUser(users) {
-    console.log("Current user is: " + users[0].name);
-    fetch("/jira/rest/api/2/search?jql=assignee=" + users[0].name)
+function getIssuesOfUser(user) {
+    console.log("Current user is: " + user);
+    fetch("/jira/rest/api/2/search?jql=assignee=" + user)
         .then(function (response) {
             if (response.ok) {
                 return response.json();
@@ -54,7 +100,7 @@ function getIssuesOfUser(users) {
         })
         .then(function (resultJson) {
             if (resultJson !== undefined) {
-                console.log("Issues here: " + JSON.stringify(resultJson));
+                //console.log("Issues here: " + JSON.stringify(resultJson));
                 resultJson.issues.forEach(function (res) {
                     issues.push({
                         key: res.key,
@@ -78,6 +124,8 @@ function getIssuesOfUser(users) {
 };
 
 function getIssueDetails() {
+    viewers.length = 0;
+    requestors.length = 0;
     issueKey = document.getElementById('selectIssue').value;
     fetch("/jira/rest/api/2/issue/" + issueKey)
         .then(function (response) {
@@ -90,42 +138,57 @@ function getIssueDetails() {
         })
         .then(function (resultJson) {
             if (resultJson !== undefined) {
-                console.log("Issue details here: " + JSON.stringify(resultJson));
+                //console.log("Issue details here: " + JSON.stringify(resultJson));
                 resultJson.fields.customfield_10000.forEach(function (res) {
                     viewers.push({
                         name: res.name
                     })
+                });
+                resultJson.fields.customfield_10001.forEach(function (res) {
+                    requestors.push({
+                        name: res.name
+                    })
                 })
-                console.log("Viewers here: " + JSON.stringify(viewers));
-
+                // console.log("Viewers here: " + JSON.stringify(viewers) +
+                //     "Requestors here: " + JSON.stringify(requestors));
+                appendIssueDetails(viewers, requestors);
             }
         });
-    appendIssueDetails(viewers);
+
 }
 
 //
-function appendIssueDetails(viewers) {
+function appendIssueDetails(viewers, requestors) {
     //console.log("Within appendIssues function: " + issues.length);
-    var table = document.getElementById("userIssueTable");
-
+    var viewersTable = document.getElementById("issueViewersTable");
+    var requestorsTable = document.getElementById("issueRequestorsTable");
     // Clear the table from previous issues - anything but the header row
-    for (var i = table.rows.length - 1; i > 0; i--) {
-        table.deleteRow(i);
+    for (var i = viewersTable.rows.length - 1; i > 0; i--) {
+        viewersTable.deleteRow(i);
     };
-    console.log("Viewers here: " + JSON.stringify(viewers));
+    for (var i = requestorsTable.rows.length - 1; i > 0; i--) {
+        requestorsTable.deleteRow(i);
+    };
+    //console.log("Viewers here: " + JSON.stringify(viewers));
+    //console.log("Requestors here: " + JSON.stringify(requestors));
 
     viewers.forEach(function (object) {
-        //console.log("Within foreach:" + object.key);
+        //console.log("Within foreach:" + object.name);
         var tr = document.createElement("tr");
 
-        tr.innerHTML = "<td style='text-align:center'>" + object.name + "</td>" +
-            "<td style='text-align:center'>" + object.name + "</td>" +
-            "<td style='text-align:center; background-color:#FF6A4B'>" + object.name + "</td>";
-
-
-        table.appendChild(tr);
+        tr.innerHTML = "<td style='text-align:left'>" + object.name + "</td>" +
+            "<td style='text-align:center'><button>Remove</button></td>";
+        viewersTable.appendChild(tr);
     });
-    //document.body.appendChild(table);
+    requestors.forEach(function (object) {
+        //console.log("Within foreach:" + object.name);
+        var tr = document.createElement("tr");
+
+        tr.innerHTML = "<td style='text-align:left'>" + object.name + "</td>" +
+            "<td style='text-align:center'><button onclick='acceptRequestor()'>Accept</button></td>" +
+            "<td style='text-align:center'><button>Reject</button></td>";
+        requestorsTable.appendChild(tr);
+    });
 }
 
 /**
@@ -140,7 +203,6 @@ function checkDueDate(dueDate, resolutionDate) {
     //console.log(issueDueDate > issueResolutionDate);
     return (issueDueDate > issueResolutionDate);
 }
-
 
 getLoggedInUser();
 //getProjects();
