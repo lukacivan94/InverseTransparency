@@ -64,7 +64,7 @@
                 </div>
                 <div id="selectUserDiv"class="row justify-content-center" style="margin-top: 15px">
                     <select id="selectUser" onchange="getIssuesOfUser()">
-                        <option>admin</option>
+                        <option>Select the User</option>
                     </select>
                 </div>
                 <div id="selectProjectDiv"class="row justify-content-center" style="margin-top: 15px">
@@ -91,6 +91,9 @@
                 </div>
                 <div id="calendarView" height:400px>
                     <div id='calendar' style="margin-top: 15px"></div>
+                    <div id='hoverMessage' style=position: center; display: none; width: 100%; background-color: rgba(0,0,0,0.5); z-index: 2;>
+                        <label>By clicking on issue you can see the details and data subject will get notified<label>
+                    </div>
                 </div>
                 <div id="projectView">
                     <div class="row justify-content-center" style="margin-top: 15px">
@@ -111,6 +114,11 @@
                             </tr>
                         </table>
                     </div>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 15px">
+                    <button type="button" onClick="directRequest()">Direct Request</button>
+                    <button type="button" onClick="queryRequest()">Query Request</button>
+                    <button type="button" onClick="toggleIssueDetails()">Toggle Issue Details</button>
                 </div>
                 
             </div>

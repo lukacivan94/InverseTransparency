@@ -16,9 +16,175 @@ var currentProject;
 const users = [];
 const usersOfProject = [];
 const uniqueProjectUsers = [];
-var currentUser;
+var currentUser; //user that is being selected and issues fetched for
+var loggedInUser;
+var retrievedUser;
 const issuesOfUser = [];
 const issuesOfProject = [];
+var unlocked = false;
+
+//first getting vague data on user then chain 
+//request to get detailed data and save it to loggedInUser variable
+function getLoggedInUser() {
+    fetch("/jira/rest/auth/latest/session")
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                //console.log(JSON.stringify(resultJson));
+                loggedInUser = getUserDetails(resultJson.self);
+                console.log("Logged in user details: " + JSON.stringify(loggedInUser.emailAddress));
+            }
+        });
+}
+
+//this function returns all the details for a username provided
+function getUserDetails(username) {
+    
+    fetch(username)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log(JSON.stringify(resultJson));
+                retrievedUser = {
+                    self: resultJson.self,
+                    key: resultJson.key,
+                    name: resultJson.name,
+                    emailAddress: resultJson.emailAddress
+                }
+                
+            }
+        });
+        return retrievedUser;
+}
+
+/**
+ * This function either shows a modal to enter username and password or returns the encrypted username and password.
+ */
+function getUserData() {
+    if (localStorage.userP === undefined) {
+        $("#spacerbox").append($('<div id="modalLogin" class="modal" tabindex="-1" role="dialog"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">Login</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body"> <div class="form-group"> <label for="inputUser">Username:</label> <input class="form-control" type="text" id="inputUser" placeholder="Username"> <label for="inputPass">Password:</label> <input class="form-control" type="password" id="inputPass" placeholder="Password"></div> </div> <div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> <button type="button" class="btn btn-primary" onClick="login()">Login</button> </div> </div> </div> </div>'));
+        $('#modalLogin').modal('show');
+        return { userP: undefined, user: undefined };
+    }
+    else {
+        return { userP: localStorage.userP, user: localStorage.user };
+    }
+}
+
+/**
+ * This function gets called from the "Login"-button in the modal and logs the user in.
+ */
+function login() {
+    const username = $('#inputUserO').val();
+    const password = $('#inputPass').val();
+
+    localStorage.userP = btoa(username + ":" + password);
+    localStorage.user = username;
+
+    window.location.reload(true);
+    console.log("logged in user: " + username);
+}
+
+//works
+function directRequest(issueKey, assignee) {
+
+    const requestBody = '{"data_types":["string"],"justification":"This is a request for ticket: ' + issueKey + '","tool":"jira","user":"demo1_jira","owner":"jan@example.com"}'
+
+    const fetchBody = {
+        method: "POST",
+        headers: {
+            accept: "application/json",
+            Authorization: "Basic " + btoa("techie:some_body_00"),
+            "Content-Type": "application/json"
+        },
+        body: requestBody
+    };
+
+    fetch("https://overseer.sse.in.tum.de/request-access/direct", fetchBody)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                console.log("[ERROR]: " + response.json())
+                return undefined;
+            }
+        }).then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log("Answer: " + JSON.stringify(resultJson));
+            }
+        });
+}
+
+//works
+function queryRequest() {
+
+    const requestBody = '{"data_types":["string"],"justification":"this is a query test from Ivan","tool":"jira","user":"demo1_jira","owners":["demo1@example.com"]}'
+
+    const fetchBody = {
+        method: "POST",
+        headers: {
+            accept: "application/json",
+            Authorization: "Basic " + btoa("techie:some_body_00"),
+            "Content-Type": "application/json"
+        },
+        body: requestBody
+    };
+
+    fetch("https://overseer.sse.in.tum.de/request-access/query", fetchBody)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                console.log("[ERROR]: " + response.json())
+                return undefined;
+            }
+        }).then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log("Answer: " + JSON.stringify(resultJson));
+            }
+        });
+}
+
+
+//works
+function health() {
+    const fetchBody = {
+        method: "GET",
+        headers: {
+            accept: "application/json"
+        },
+    };
+    fetch("https://overseer.sse.in.tum.de/health")
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                console.log("[ERROR]: " + response.json())
+                return undefined;
+            }
+        }).then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log("Answer: " + JSON.stringify(resultJson));
+            }
+        });
+}
 
 /**
  * This function returns a list of all users and saves them in users array. 
@@ -212,12 +378,11 @@ function getIssuesOfUser() {
         .then(function (resultJson) {
             if (resultJson !== undefined) {
                 console.log("[ISSUES]: " + JSON.stringify(resultJson));
-                resultJson.issues.forEach(function (res){
+                resultJson.issues.forEach(function (res) {
                     buildIssues(res, issuesOfUser);
                 });
                 console.log("There are " + issuesOfUser.length + " issues: " + JSON.stringify(issuesOfUser));
                 appendIssues(issuesOfUser);
-                
             }
         });
 };
@@ -319,15 +484,31 @@ function appendIssues(issues) {
 function buildCalendar(issues) {
     //document.addEventListener('DOMContentLoaded', function () {//});
     var calendarEl = document.getElementById('calendar');
-
-    var events = issues.map(issue => {
-        return {
-            title: issue.key,
-            start: issue.duedate,
-            color: issue.category
-        }
-    })
-
+    if (unlocked) {
+        var events = issues.map(issue => {
+            return {
+                id: issue.key,
+                groupId: issue.assignee,
+                title: issue.key,
+                start: issue.duedate,
+                color: issue.category,
+                assignee: issue.assignee,
+                tip: "By clicking on issue you can see the details and data subject will get notified"
+            }
+        })
+    } else {
+        var events = issues.map(issue => {
+            return {
+                id: issue.key, //populating id with issue key
+                groupId: issue.assignee, //populating groupId with assignee
+                title: "Not requested",
+                start: issue.duedate,
+                color: issue.category,
+                assignee: issue.assignee,
+                tip: "By clicking on issue you can see the details and data subject will get notified"
+            }
+        })
+    }
     console.log("Issues within buildCalendar: " + JSON.stringify(issues));
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -340,10 +521,14 @@ function buildCalendar(issues) {
         },
         events: events,
         eventClick: function (info) {
-            requestView(info)
+            console.log("This is the assignee from event: " + info.event.groupId + ", key: " + info.event.id);
+            directRequest(info.event.groupId, info.event.id); //requestView(info)
         },
-        eventMouseEnter: function (mouseEnterInfo) {
-            displayHoverMessage(mouseEnterInfo)
+        eventMouseEnter: function (event) {
+            $('#hoverMessage').show();
+        },
+        eventMouseLeave: function (event) {
+            $('#hoverMessage').hide();
         }
     });
 
@@ -371,6 +556,12 @@ function requestView(info) {
 
 function displayHoverMessage() {
     console.log("Hover message is displaying");
+    $('#hoverMessage').show();
+}
+
+function hideHoverMessage() {
+    console.log("Hover message is gone");
+    $('#hoverMessage').hide();
 }
 
 /**
@@ -420,7 +611,15 @@ function switchViews() {
     });
 }
 
+function toggleIssueDetails() {
+    unlocked = !unlocked;
+    console.log("Unlocked: " + unlocked);
+    buildCalendar(issuesOfUser);
+}
+
 switchViews();
 getUsers();
 getProjects();
+getUserData();
+getLoggedInUser();
 //getIssuesOfUser("valentin");
