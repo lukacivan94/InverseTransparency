@@ -19,6 +19,10 @@
     <context>dashboardPlugins</context>
   </web-resource>
 
+  <resource type="download" name="common.js" location="js/common.js">
+    <param name="content-type" value="application/javascript" />
+  </resource>
+
   <resource type="download" name="dashboardPlugin.js" location="js/dashboardPlugin.js">
     <param name="content-type" value="application/javascript" />
   </resource>
@@ -31,7 +35,7 @@
     <param name="content-type" value="application/javascript" />
   </resource>
 
-  <resource type="download" name="projectMostActive.js" location="js/projectMostActive.js">
+  <resource type="download" name="mttrPlugin.js" location="js/mttrPlugin.js">
     <param name="content-type" value="application/javascript" />
   </resource>
 
@@ -57,7 +61,7 @@
   <gadget name="Issues Calendar" i18n-name-key="calendar-plugin.name" key="calendar-plugin" location="gadgets/issuesCalendar/gadget.xml">
     <description key="calendar-plugin.description">The Issues Calendar plugin</description>
   </gadget>
-  <gadget name="Project Most Active" i18n-name-key="active-plugin.name" key="active-plugin" location="gadgets/projectMostActive/gadget.xml">
-    <description key="active-plugin.description">The Project Most Active plugin</description>
+  <gadget name="MTTR" i18n-name-key="active-plugin.name" key="active-plugin" location="gadgets/mttrPlugin/gadget.xml">
+    <description key="active-plugin.description">Mttr Plugin</description>
   </gadget>
 </atlassian-plugin>

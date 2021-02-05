@@ -150,6 +150,7 @@
             </script>
             <!-- [ETHICAL_SSE] Your plugin logic is imported here -->
             <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/issuesOverview.js"></script>
+            <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/common.js"></script>
             <!-- Remove the loading indicator as soon as the script above has terminated. -->
             <script type="text/javascript">
                 gadget.hideLoading();
