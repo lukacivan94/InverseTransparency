@@ -118,6 +118,34 @@ function getIssuesOfUser() {
         });
 };
 
+
+// The assumption is that every issue has Assignee
+// otherwise null pointer error pops up
+function getIssuesOfProject() {
+    issuesOfProject.length = 0;
+    currentProject = document.getElementById('selectProject').value;
+    console.log("Current project is: " + currentProject);
+    fetch("/jira/rest/api/2/search?jql=project=" + currentProject)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                resultJson.issues.forEach(function (res) {
+                    buildIssues(res, issuesOfProject);
+                })
+                appendIssues(issuesOfProject);
+                getUsersOfProject();
+                console.log("There are " + issuesOfProject.length + " issues of " + currentProject + " project: " + JSON.stringify(issuesOfProject));
+            }
+        });
+}
+
 function buildIssues(res, issues) {
     if (res.fields.resolution !== null) {
         if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
@@ -194,31 +222,6 @@ function checkDueDate(dueDate, resolutionDate) {
     return (issueDueDate > issueResolutionDate);
 }
 
-// The assumption is that every issue has Assignee
-// otherwise null pointer error pops up
-function getIssuesOfProject() {
-    issuesOfProject.length = 0;
-    currentProject = document.getElementById('selectProject').value;
-    console.log("Current project is: " + currentProject);
-    fetch("/jira/rest/api/2/search?jql=project=" + currentProject)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                return undefined;
-            }
-        })
-        .then(function (resultJson) {
-            if (resultJson !== undefined) {
-                resultJson.issues.forEach(function (res) {
-                    buildIssues(res, issuesOfProject);
-                })
-                getUsersOfProject();
-                console.log("There are " + issuesOfProject.length + " issues of " + currentProject + " project: " + JSON.stringify(issuesOfProject));
-            }
-        });
-}
 
 // ------------------- Function calls -----------------
 

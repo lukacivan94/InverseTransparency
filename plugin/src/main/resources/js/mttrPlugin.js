@@ -1,3 +1,20 @@
+/**
+ * @file
+ * Functionality used by MTTR plugin.
+ */
+
+// ------------------- Variables -----------------
+
+const issuesByPriority = [];
+const lowestIssues = [];
+const lowIssues = [];
+const mediumIssues = [];
+const highIssues = [];
+const highestIssues = [];
+
+// ------------------- Functions -----------------
+
+
 function switchViews() {
     $("#projectView").hide();
     $("#selectProjectDiv").hide();
@@ -21,23 +38,160 @@ function switchViews() {
 }
 
 //this function needs to push issues to graphs
-function appendIssues(issues){
+function appendIssues(issues) {
     console.log("Life is good");
     calculateMttr(issues);
 }
 
-function calculateMttr(issues){
-    issues.forEach(function(issue){
+function calculateMttr(issues) {
+    issuesByPriority.length = 0; // clearing previous user data
+    var lowestCount = 0, lowCount = 0, mediumCount = 0, highCount = 0, highestCount = 0;
+    var lowestHours = 0, lowHours = 0, mediumHours = 0, highHours = 0, highestHours = 0;
+    issues.forEach(function (issue) {
         var created = new Date(issue.created);
         var resolved = new Date(issue.resolutiondate);
-        console.log("DATES ARE HERE:" + created + "-----" + resolved);
+        //console.log("DATES ARE HERE:" + created + "-----" + resolved);
+        //number of hours between
         var hours = Math.abs(created - resolved) / 36e5;
         console.log("HOURS ARE HERE:" + hours);
-    })
+        if (resolved !== null) {
+            if (issue.priority == "Lowest") {
+                lowestIssues.push({
+                    key: issue.key,
+                    mttr: hours,
+                    priority: issue.priority,
+                    recommended: 120
+                })
+                lowestCount++;
+                lowestHours += hours;
+            } else if (issue.priority == "Low") {
+                lowIssues.push({
+                    key: issue.key,
+                    mttr: hours,
+                    priority: issue.priority,
+                    recommended: 96
+                })
+                lowCount++;
+                lowHours += hours;
+            } else if (issue.priority == "Medium") {
+                mediumIssues.push({
+                    key: issue.key,
+                    mttr: hours,
+                    priority: issue.priority,
+                    recommended: 72
+                })
+                mediumCount++;
+                mediumHours += hours;
+            } else if (issue.priority == "High") {
+                highIssues.push({
+                    key: issue.key,
+                    mttr: hours,
+                    priority: issue.priority,
+                    recommended: 48
+                })
+                highCount++;
+                highHours += hours;
+            } else {
+                highestIssues.push({
+                    key: issue.key,
+                    mttr: hours,
+                    priority: issue.priority,
+                    recommended: 24
+                })
+                highestCount++;
+                highestHours += hours;
+            }
+        }
+    });
+    if (lowestCount == 0) {
+        issuesByPriority.push({
+            priority: "Lowest", recommended: 120, avgMttr: 0
+        })
+    } else {
+        issuesByPriority.push({
+            priority: "Lowest", recommended: 120, avgMttr: lowestHours / lowestCount
+        })
+    }
+    if (lowCount == 0) {
+        issuesByPriority.push({
+            priority: "Low", recommended: 96, avgMttr: 0
+        })
+    } else {
+        issuesByPriority.push({
+            priority: "Low", recommended: 96, avgMttr: lowHours / lowCount
+        })
+    }
+    if (mediumCount == 0) {
+        issuesByPriority.push({
+            priority: "Medium", recommended: 72, avgMttr: 0
+        })
+    } else {
+        issuesByPriority.push({
+            priority: "Medium", recommended: 72, avgMttr: mediumHours / mediumCount
+        })
+    }
+    if (highCount == 0) {
+        issuesByPriority.push({
+            priority: "High", recommended: 48, avgMttr: 0
+        })
+    } else {
+        issuesByPriority.push({
+            priority: "High", recommended: 48, avgMttr: highHours / highCount
+        })
+    }
+    if (highestCount == 0) {
+        issuesByPriority.push({
+            priority: "Highest", recommended: 24, avgMttr: 0
+        })
+    } else {
+        issuesByPriority.push({
+            priority: "Highest", recommended: 24, avgMttr: highestHours / highestCount
+        })
+    }
+
+    console.log("PRIORITIZED: " + JSON.stringify(issuesByPriority));
+
+    google.charts.load('current', { packages: ['corechart', 'bar'] });
+    google.charts.setOnLoadCallback(drawMultSeries);
+
+    function drawMultSeries() {
+        const data = new google.visualization.DataTable();
+
+        data.addColumn('string', 'Priority');
+        data.addColumn('number', 'Recommended');
+        data.addColumn('number', 'Actual');
+
+        issuesByPriority.forEach(function (issue) {
+            data.addRows([
+                [issue.priority, issue.recommended, issue.avgMttr]
+            ]);
+        })
+
+        var options = {
+            title: 'Mean time to resolve',
+            legend: { position: 'bottom', maxLines: 3 },
+            width: "600",
+            height: "300",
+            hAxis: {
+                title: 'Priority of ticket',
+            },
+            vAxis: {
+                title: 'Hours'
+            },
+            colors: ['#ccff66', '#e6693e'],
+            is3D: true
+        };
+
+        var chart = new google.visualization.ColumnChart(
+            document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+    }
 }
 
+
 //this function is only here because it's extracted to common.js and being called there
-function getUsersOfProject(){
+function getUsersOfProject() {
     console.log("Life is great");
 };
 
