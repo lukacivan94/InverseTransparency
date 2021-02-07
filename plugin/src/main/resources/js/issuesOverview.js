@@ -5,8 +5,7 @@
 
 // ------------------- Variables -----------------
 
-const usersOfProject = [];
-const uniqueProjectUsers = [];
+
 var loggedInUser;
 var retrievedUser;
 var unlocked = false;
@@ -206,29 +205,6 @@ function queryRequest() {
         });
 }
 
-/*  i.e.
-    SP-1: admin,
-    SP-2: valentin,
-    SP-3: ivan,
-    SP-4: valentin
-    usersOfProject = [admin, valentin, ivan]
-*/
-function getUsersOfProject() {
-    usersOfProject.length = 0; //clearing previous project users
-    issuesOfProject.forEach(function (issue) {
-        usersOfProject.push(
-            issue.assignee
-        )
-    })
-    uniqueProjectUsers.length = 0; //clearing previous project users
-    //clearing duplicates
-    $.each(usersOfProject, function (i, el) {
-        if ($.inArray(el, uniqueProjectUsers) === -1) uniqueProjectUsers.push(el);
-    });
-    console.log("Users of project: " + JSON.stringify(usersOfProject));
-    console.log("Unique Users of project: " + JSON.stringify(uniqueProjectUsers));
-    appendUsers();
-}
 
 //provide a list of users 
 function appendUsers() {
@@ -355,7 +331,10 @@ function toggleIssueDetails() {
     buildCalendar(issuesOfUser);
 }
 
+// ------------------- Function calls -----------------
 
+getUsers();
+getProjects();
 //create populate() function to call all functions in background
 switchViews();
 //getUsers();

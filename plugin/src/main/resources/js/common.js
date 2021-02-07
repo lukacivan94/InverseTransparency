@@ -6,6 +6,8 @@
 // ------------------- Variables -----------------
 
 const users = [];
+const usersOfProject = [];
+const uniqueProjectUsers = [];
 const projects = [];
 const issuesOfUser = [];
 const issuesOfProject = [];
@@ -210,6 +212,31 @@ function buildIssues(res, issues) {
     }
 }
 
+
+/*  i.e.
+    SP-1: admin,
+    SP-2: valentin,
+    SP-3: ivan,
+    SP-4: valentin
+    usersOfProject = [admin, valentin, ivan]
+*/
+function getUsersOfProject() {
+    usersOfProject.length = 0; //clearing previous project users
+    issuesOfProject.forEach(function (issue) {
+        usersOfProject.push(
+            issue.assignee
+        )
+    })
+    uniqueProjectUsers.length = 0; //clearing previous project users
+    //clearing duplicates
+    $.each(usersOfProject, function (i, el) {
+        if ($.inArray(el, uniqueProjectUsers) === -1) uniqueProjectUsers.push(el);
+    });
+    console.log("Users of project: " + JSON.stringify(usersOfProject));
+    console.log("Unique Users of project: " + JSON.stringify(uniqueProjectUsers));
+    appendUsers();
+}
+
 /**
  * This function checks if the issue Due Date has passed.
  * @params dueDate, resolutionDate of the issue
@@ -225,5 +252,5 @@ function checkDueDate(dueDate, resolutionDate) {
 
 // ------------------- Function calls -----------------
 
-getUsers();
-getProjects();
+// getUsers();
+// getProjects();

@@ -37,7 +37,7 @@ function switchViews() {
     });
 }
 
-//this function needs to push issues to graphs
+//this function needs to push issues to chart
 function appendIssues(issues) {
     console.log("Life is good");
     calculateMttr(issues);
@@ -191,8 +191,12 @@ function calculateMttr(issues) {
 
 
 //this function is only here because it's extracted to common.js and being called there
-function getUsersOfProject() {
+function appendUsers() {
     console.log("Life is great");
 };
 
+// ------------------- Function calls -----------------
+
 switchViews();
+getUsers();
+getProjects();

@@ -31,7 +31,7 @@
     <param name="content-type" value="application/javascript" />
   </resource>
 
-  <resource type="download" name="issuesCalendar.js" location="js/issuesCalendar.js">
+  <resource type="download" name="workloadPlugin.js" location="js/workloadPlugin.js">
     <param name="content-type" value="application/javascript" />
   </resource>
 
@@ -58,8 +58,8 @@
   <gadget name="Issues Overview" i18n-name-key="issues-plugin.name" key="issues-plugin" location="gadgets/issuesOverview/gadget.xml">
     <description key="issues-plugin.description">The Issues Overview plugin</description>
   </gadget>
-  <gadget name="Issues Calendar" i18n-name-key="calendar-plugin.name" key="calendar-plugin" location="gadgets/issuesCalendar/gadget.xml">
-    <description key="calendar-plugin.description">The Issues Calendar plugin</description>
+  <gadget name="Workload Plugin" i18n-name-key="workload-plugin.name" key="workload-plugin" location="gadgets/workloadPlugin/gadget.xml">
+    <description key="workload-plugin.description">The Workload plugin</description>
   </gadget>
   <gadget name="MTTR" i18n-name-key="active-plugin.name" key="active-plugin" location="gadgets/mttrPlugin/gadget.xml">
     <description key="active-plugin.description">Mttr Plugin</description>
