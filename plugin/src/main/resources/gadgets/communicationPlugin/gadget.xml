@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
     <ModulePrefs
-            title="Transparency Dashboard"
-            directory_title="Transparency Dashboard Plugin"
-            description="Plugin that gives control to data privacy"
+            title="Communication Dashboard"
+            directory_title="Communication Plugin"
+            description="Plugin that displays Communication within a project"
             author="Ivan Lukac"
             author_email=""
             height="350">
@@ -50,51 +50,16 @@
             <!-- %       [ETHICAL_SSE] Enter your HTML below       % -->
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:380px">
+            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:500px">
                 <div class="row justify-content-center" style="margin-top: 15px">
-                    <h4>Control Dashboard</h4>
+                    <h4>Communication overview</h4>
                 </div>
-                <div class="row justify-content-center" style="margin-top: 15px">
-                    <h5>My Issues</h5>
-                </div>
-                <div class="row justify-content-center" style="margin-top: 5px">
-                    <select id="selectIssue" onchange="getIssueDetails()">
-                        <option>Select the Issue</option>
+                <div id="selectProjectDiv" class="row justify-content-center" style="margin-top: 15px">
+                    <select id="selectProject" onchange="getIssuesOfProject()">
+                        <option>Select the Project</option>
                     </select>
                 </div>
-                <div class="row justify-content-center" style="margin-top: 15px">
-                    <h5>Issue Viewers</h5>
-                </div>
-                <div class="row justify-content-center" style="margin-top: 5px">
-                    <table id="issueViewersTable" style="overflow: auto">
-                        <tr>
-                            <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspNAME
-                            </th>
-                            <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspACTION
-                            </th>
-                        </tr>
-                    </table>
-                </div>
-                <div class="row justify-content-center" style="margin-top: 15px">
-                    <h5>Issue Requestors</h5>
-                </div>
-                <div class="row justify-content-center" style="margin-top: 5px">
-                    <table id="issueRequestorsTable" style="overflow: auto">
-                        <tr>
-                            <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspNAME
-                            </th>
-                            <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspACTION 1
-                            </th>
-                            <th>
-                                <span class="glyphicon glyphicon-sort"></span>&nbsp&nbspACTION 2
-                            </th>
-                        </tr>
-                    </table>
-                </div>
+                <div id="piechart" style="width: 600px; height: 400px;"></div>
             </div>
 
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -128,8 +93,8 @@
             </script>
 
             <!-- [ETHICAL_SSE] Your plugin logic is imported here -->
-            <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/dashboardPlugin.js"></script>
-
+            <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/common.js"></script>           
+            <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/communicationPlugin.js"></script>
             <!-- Remove the loading indicator as soon as the script above has terminated. -->
             <script type="text/javascript">
                 gadget.hideLoading();

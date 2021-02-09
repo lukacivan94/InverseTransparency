@@ -23,7 +23,7 @@
     <param name="content-type" value="application/javascript" />
   </resource>
 
-  <resource type="download" name="dashboardPlugin.js" location="js/dashboardPlugin.js">
+  <resource type="download" name="communicationPlugin.js" location="js/communicationPlugin.js">
     <param name="content-type" value="application/javascript" />
   </resource>
 
@@ -52,8 +52,8 @@
     <label key="dashboard.label" />
     <link linkId="dashboard-link">http://www.inversetransparenz.de/</link>
   </web-item>
-  <gadget name="Ethical Plugin" i18n-name-key="ethical-plugin.name" key="ethical-plugin" location="gadgets/ethical-plugin/gadget.xml">
-    <description key="ethical-plugin.description">The Ethical Analysis Plugin</description>
+  <gadget name="Communication Plugin" i18n-name-key="communication-plugin.name" key="communication-plugin" location="gadgets/communicationPlugin/gadget.xml">
+    <description key="communication-plugin.description">The Communication Analysis Plugin</description>
   </gadget>
   <gadget name="Issues Overview" i18n-name-key="issues-plugin.name" key="issues-plugin" location="gadgets/issuesOverview/gadget.xml">
     <description key="issues-plugin.description">The Issues Overview plugin</description>

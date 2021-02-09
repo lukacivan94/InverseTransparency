@@ -11,6 +11,8 @@ const uniqueProjectUsers = [];
 const projects = [];
 const issuesOfUser = [];
 const issuesOfProject = [];
+const commentsOfProjectIssues = [];
+const usersWithProjectRoles = [];
 
 var currentUser;
 var currentProject;
@@ -120,11 +122,9 @@ function getIssuesOfUser() {
         });
 };
 
-
-// The assumption is that every issue has Assignee
-// otherwise null pointer error pops up
 function getIssuesOfProject() {
     issuesOfProject.length = 0;
+    usersWithProjectRoles.length = 0;
     currentProject = document.getElementById('selectProject').value;
     console.log("Current project is: " + currentProject);
     fetch("/jira/rest/api/2/search?jql=project=" + currentProject)
@@ -141,75 +141,213 @@ function getIssuesOfProject() {
                 resultJson.issues.forEach(function (res) {
                     buildIssues(res, issuesOfProject);
                 })
+
                 appendIssues(issuesOfProject);
                 getUsersOfProject();
+                //getRoles();
                 console.log("There are " + issuesOfProject.length + " issues of " + currentProject + " project: " + JSON.stringify(issuesOfProject));
             }
         });
 }
 
 function buildIssues(res, issues) {
-    if (res.fields.resolution !== null) {
-        if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
-            issues.push({
-                key: res.key,
-                issueType: res.fields.issuetype.name,
-                summary: res.fields.summary,
-                project: res.fields.project.key,
-                duedate: res.fields.duedate,
-                resolution: res.fields.resolution.name, //taking name if not null
-                resolutiondate: res.fields.resolutiondate,
-                assignee: res.fields.assignee.name,
-                created: res.fields.created,
-                priority: res.fields.priority.name,
-                category: "green",
-            });
-        } else {
-            issues.push({
-                key: res.key,
-                issueType: res.fields.issuetype.name,
-                summary: res.fields.summary,
-                project: res.fields.project.key,
-                duedate: res.fields.duedate,
-                resolution: res.fields.resolution.name, //taking name if not null
-                resolutiondate: res.fields.resolutiondate,
-                assignee: res.fields.assignee.name,
-                created: res.fields.created,
-                priority: res.fields.priority.name,
-                category: "red",
-            });
+    // we only consider assigned issues
+    if (res.fields.assignee !== null) {
+        if (res.fields.resolution !== null) {
+            if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
+                issues.push({
+                    key: res.key,
+                    issueType: res.fields.issuetype.name,
+                    summary: res.fields.summary,
+                    project: res.fields.project.key,
+                    duedate: res.fields.duedate,
+                    resolution: res.fields.resolution.name, //taking name if not null
+                    resolutiondate: res.fields.resolutiondate,
+                    assignee: res.fields.assignee.name,
+                    created: res.fields.created,
+                    priority: res.fields.priority.name,
+                    category: "green",
+                });
+            } else {
+                issues.push({
+                    key: res.key,
+                    issueType: res.fields.issuetype.name,
+                    summary: res.fields.summary,
+                    project: res.fields.project.key,
+                    duedate: res.fields.duedate,
+                    resolution: res.fields.resolution.name, //taking name if not null
+                    resolutiondate: res.fields.resolutiondate,
+                    assignee: res.fields.assignee.name,
+                    created: res.fields.created,
+                    priority: res.fields.priority.name,
+                    category: "red",
+                });
+            }
+        } else { //since unresolved issues don't have resolution date we forward current date
+            if (checkDueDate(res.fields.duedate, new Date())) {
+                issues.push({
+                    key: res.key,
+                    issueType: res.fields.issuetype.name,
+                    summary: res.fields.summary,
+                    project: res.fields.project.key,
+                    duedate: res.fields.duedate,
+                    resolution: res.fields.resolution, //just taking null
+                    resolutiondate: res.fields.resolutiondate,
+                    assignee: res.fields.assignee.name,
+                    created: res.fields.created,
+                    priority: res.fields.priority.name,
+                    category: "green",
+                });
+            } else {
+                issues.push({
+                    key: res.key,
+                    issueType: res.fields.issuetype.name,
+                    summary: res.fields.summary,
+                    project: res.fields.project.key,
+                    duedate: res.fields.duedate,
+                    resolution: res.fields.resolution, //just taking null
+                    resolutiondate: res.fields.resolutiondate,
+                    assignee: res.fields.assignee.name,
+                    created: res.fields.created,
+                    priority: res.fields.priority.name,
+                    category: "red",
+                });
+            }
         }
-    } else { //since unresolved issues don't have resolution date we forward current date
-        if (checkDueDate(res.fields.duedate, new Date())) {
-            issues.push({
-                key: res.key,
-                issueType: res.fields.issuetype.name,
-                summary: res.fields.summary,
-                project: res.fields.project.key,
-                duedate: res.fields.duedate,
-                resolution: res.fields.resolution, //just taking null
-                resolutiondate: res.fields.resolutiondate,
-                assignee: res.fields.assignee.name,
-                created: res.fields.created,
-                priority: res.fields.priority.name,
-                category: "green",
-            });
-        } else {
-            issues.push({
-                key: res.key,
-                issueType: res.fields.issuetype.name,
-                summary: res.fields.summary,
-                project: res.fields.project.key,
-                duedate: res.fields.duedate,
-                resolution: res.fields.resolution, //just taking null
-                resolutiondate: res.fields.resolutiondate,
-                assignee: res.fields.assignee.name,
-                created: res.fields.created,
-                priority: res.fields.priority.name,
-                category: "red",
-            });
+    } else {
+        if (res.fields.resolution !== null) {
+            if (checkDueDate(res.fields.duedate, res.fields.resolutiondate)) {
+                issues.push({
+                    key: res.key,
+                    issueType: res.fields.issuetype.name,
+                    summary: res.fields.summary,
+                    project: res.fields.project.key,
+                    duedate: res.fields.duedate,
+                    resolution: res.fields.resolution.name, //taking name if not null
+                    resolutiondate: res.fields.resolutiondate,
+                    assignee: "Unassigned",
+                    created: res.fields.created,
+                    priority: res.fields.priority.name,
+                    category: "green",
+                });
+            } else {
+                issues.push({
+                    key: res.key,
+                    issueType: res.fields.issuetype.name,
+                    summary: res.fields.summary,
+                    project: res.fields.project.key,
+                    duedate: res.fields.duedate,
+                    resolution: res.fields.resolution.name, //taking name if not null
+                    resolutiondate: res.fields.resolutiondate,
+                    assignee: "Unassigned",
+                    created: res.fields.created,
+                    priority: res.fields.priority.name,
+                    category: "red",
+                });
+            }
+        } else { //since unresolved issues don't have resolution date we forward current date
+            if (checkDueDate(res.fields.duedate, new Date())) {
+                issues.push({
+                    key: res.key,
+                    issueType: res.fields.issuetype.name,
+                    summary: res.fields.summary,
+                    project: res.fields.project.key,
+                    duedate: res.fields.duedate,
+                    resolution: res.fields.resolution, //just taking null
+                    resolutiondate: res.fields.resolutiondate,
+                    assignee: "Unassigned",
+                    created: res.fields.created,
+                    priority: res.fields.priority.name,
+                    category: "green",
+                });
+            } else {
+                issues.push({
+                    key: res.key,
+                    issueType: res.fields.issuetype.name,
+                    summary: res.fields.summary,
+                    project: res.fields.project.key,
+                    duedate: res.fields.duedate,
+                    resolution: res.fields.resolution, //just taking null
+                    resolutiondate: res.fields.resolutiondate,
+                    assignee: "Unassigned",
+                    created: res.fields.created,
+                    priority: res.fields.priority.name,
+                    category: "red",
+                });
+            }
         }
     }
+}
+
+function getCommentsOfIssue(issue) {
+    commentsOfProjectIssues.length = 0;
+    fetch("/jira/rest/api/2/issue/" + issue.key + "/comment")
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log("COMMENTS ARE HERE: " + JSON.stringify(resultJson));
+                if (resultJson.total > 0) { //if an issue has at least one comment
+                    resultJson.comments.forEach(function (comment) {
+                        commentsOfProjectIssues.push({
+                            author: comment.author.name,
+                            body: comment.body
+                        })
+                    })
+                }
+                console.log("Users with comments: " + JSON.stringify(commentsOfProjectIssues));
+            }
+        });
+}
+
+// api token: KLUiCLiGSE5byvjA6fB88B89
+function getRolesOfProject() {
+    fetch("/jira/rest/api/2/project/" + currentProject + "/role")
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+            }
+        });
+}
+
+
+function getUsersWithProjectRoles(roleId) {
+    fetch("/jira/rest/api/2/project/" + currentProject + "/role/" + roleId)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
+                if (resultJson.actors.length > 0) { //if a project has at least one actor
+                    resultJson.actors.forEach(function (actor) {
+                        usersWithProjectRoles.push({
+                            name: actor.name,
+                            role: resultJson.name
+                        })
+                    })
+                    //console.log("Users with roles: " + JSON.stringify(usersWithProjectRoles));
+                }
+            }
+        });
 }
 
 

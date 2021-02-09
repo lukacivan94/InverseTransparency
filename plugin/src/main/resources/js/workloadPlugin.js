@@ -18,11 +18,13 @@ function appendIssues(issues) {
 // and can be used here
 function appendUsers() {
     usersWithNumberOfIssues.length = 0;
+    //var numberOfAssignedIssues = issuesOfProject.length;
     uniqueProjectUsers.forEach(function (user) {
         var numberOfIssues = 0;
         issuesOfProject.forEach(function (issue) {
             if (issue.assignee == user) {
                 numberOfIssues++;
+                //numberOfAssignedIssues--;
             }
         })
         usersWithNumberOfIssues.push({
@@ -31,6 +33,7 @@ function appendUsers() {
         })
         //console.log("USERS AND ISSUE NUMBER: " + JSON.stringify(usersWithNumberOfIssues));
     })
+    //console.log("Number of unassigned: " + issuesOfProject.length - numberOfAssignedIssues)
     buildPieChart();
 };
 
