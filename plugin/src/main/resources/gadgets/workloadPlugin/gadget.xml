@@ -58,7 +58,7 @@
                         <option>Select the Project</option>
                     </select>
                 </div>
-                <div id="piechart" style="width: 600px; height: 400px;"></div>
+                <div id="piechart" style="width: 450px; height: 400px;"></div>
             </div>
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <!-- %                End of your HTML                 % -->

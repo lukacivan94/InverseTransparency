@@ -1,28 +1,161 @@
 /**
  * @file
- * Functionality of the issues overview dashboard plugin.
+ * Functionality of the Communication overview dashboard plugin.
  */
 
 // ------------------- Variables -----------------
-
-
+const rolesWithCommentNumbers = [];
 
 // ------------------- Functions -----------------
 
 
 function appendIssues(issues) {
+    $.ajax({
+        url: getCommentsOfProject(issues),
+        success: function () {
+            groupCommentsPerRoles();
+        }
+    });
+    $.ajax({
+        url: groupCommentsPerRoles(),
+        success: function () {
+            buildChart();
+        }
+    });
+}
+
+function getCommentsOfProject(issues) {
+    commentsOfProjectIssues.length = 0;
     issues.forEach(function (issue) {
         getCommentsOfIssue(issue);
     });
-    getRoles();
 }
 
-function getRoles(){
-    getUsersWithProjectRoles(10100); //get Developers
-    getUsersWithProjectRoles(10101); //get Testers
-    getUsersWithProjectRoles(10102); //get Viewers
-    getUsersWithProjectRoles(10103); //get Project Administrators
-    console.log("Users with roles: " + JSON.stringify(usersWithProjectRoles));
+function getCommentsOfIssue(issue) {
+    fetch("/jira/rest/api/2/issue/" + issue.key + "/comment")
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                if (resultJson.total > 0) { //if an issue has at least one comment
+                    resultJson.comments.forEach(function (comment) {
+                        commentsOfProjectIssues.push({
+                            author: comment.author.name,
+                            body: comment.body
+                        })
+                    })
+                }
+                console.log("Users with comments: " + JSON.stringify(commentsOfProjectIssues));
+            }
+        });
+}
+
+function groupCommentsPerRoles() {
+    rolesWithCommentNumbers.length = 0;
+    console.log('comments of project: ' + JSON.stringify(commentsOfProjectIssues));
+    var numberOfDevelopersComments = 0;
+    var numberOfTestersComments = 0;
+    var numberOfViewersComments = 0;
+    var numberOfProjectAdminsComments = 0;
+    if (commentsOfProjectIssues.length < 1) {
+        rolesWithCommentNumbers.push({
+            role: "No comments for this project",
+            numberOfComments: 0
+        })
+    } else {
+        developers.forEach(function (user) {
+            if (user.projectId == currentProject) {
+                commentsOfProjectIssues.forEach(function (comment) {
+                    if (user.name == comment.author) {
+                        numberOfDevelopersComments++;
+                    }
+                })
+            }
+        })
+        testers.forEach(function (user) {
+            if (user.projectId == currentProject) {
+                commentsOfProjectIssues.forEach(function (comment) {
+                    if (user.name == comment.author) {
+                        numberOfTestersComments++;
+                    }
+                })
+            }
+        })
+        viewers.forEach(function (user) {
+            if (user.projectId == currentProject) {
+                commentsOfProjectIssues.forEach(function (comment) {
+                    if (user.name == comment.author) {
+                        numberOfViewersComments++;
+                    }
+                })
+            }
+        })
+        projectAdmins.forEach(function (user) {
+            if (user.projectId == currentProject) {
+                commentsOfProjectIssues.forEach(function (comment) {
+                    if (user.name == comment.author) {
+                        numberOfProjectAdminsComments++;
+                    }
+                })
+            }
+        })
+        rolesWithCommentNumbers.push({
+            role: "Developers", numberOfComments: numberOfDevelopersComments
+        })
+        rolesWithCommentNumbers.push({
+            role: "Testers", numberOfComments: numberOfTestersComments
+        })
+        rolesWithCommentNumbers.push({
+            role: "Viewers", numberOfComments: numberOfViewersComments
+        })
+        rolesWithCommentNumbers.push({
+            role: "Project Administrators", numberOfComments: numberOfProjectAdminsComments
+        })
+    }
+}
+
+function buildChart() {
+    google.charts.load('current', { packages: ['corechart', 'bar'] });
+    google.charts.setOnLoadCallback(drawMultSeries);
+
+    function drawMultSeries() {
+        const data = new google.visualization.DataTable();
+
+        data.addColumn('string', 'Role');
+        data.addColumn('number', 'Comments');
+
+        rolesWithCommentNumbers.forEach(function (role) {
+            data.addRows([
+                [role.role, role.numberOfComments]
+            ]);
+        })
+
+        var options = {
+            title: 'Issues per role',
+            legend: { position: 'top', maxLines: 3 },
+            width: "650",
+            height: "400",
+            hAxis: {
+                title: 'Role',
+            },
+            vAxis: {
+                title: 'Number of comments'
+            },
+            colors: ['#ccff66', '#e6693e'],
+            is3D: true
+        };
+
+        var chart = new google.visualization.ColumnChart(
+            document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+    }
 }
 
 // uniqueProjectUsers array has already been populated with the getProjects function call

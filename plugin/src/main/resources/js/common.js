@@ -12,7 +12,12 @@ const projects = [];
 const issuesOfUser = [];
 const issuesOfProject = [];
 const commentsOfProjectIssues = [];
-const usersWithProjectRoles = [];
+const usersWithRoles = [];
+const developers = [];
+const testers = [];
+const viewers = [];
+const projectAdmins = [];
+
 
 var currentUser;
 var currentProject;
@@ -90,6 +95,12 @@ function getProjects() {
                     el.value = opt.key;
                     select.appendChild(el);
                 }
+                projects.forEach(function (project) {
+                    getUsersWithProjectRoles(project.key, 10100); //get Developers
+                    getUsersWithProjectRoles(project.key, 10101); //get Testers
+                    getUsersWithProjectRoles(project.key, 10102); //get Viewers
+                    getUsersWithProjectRoles(project.key, 10103); //get Project Administrators
+                })
             }
         });
 };
@@ -124,7 +135,6 @@ function getIssuesOfUser() {
 
 function getIssuesOfProject() {
     issuesOfProject.length = 0;
-    usersWithProjectRoles.length = 0;
     currentProject = document.getElementById('selectProject').value;
     console.log("Current project is: " + currentProject);
     fetch("/jira/rest/api/2/search?jql=project=" + currentProject)
@@ -144,11 +154,87 @@ function getIssuesOfProject() {
 
                 appendIssues(issuesOfProject);
                 getUsersOfProject();
-                //getRoles();
-                console.log("There are " + issuesOfProject.length + " issues of " + currentProject + " project: " + JSON.stringify(issuesOfProject));
+            }
+        });
+
+}
+
+function getUsersWithProjectRoles(projectId, roleId) {
+    //roleArray.length = 0;
+    //fetch("/jira/rest/api/2/project/" + currentProject + "/role/" + roleId)
+    fetch("/jira/rest/api/2/project/" + projectId + "/role/" + roleId)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
+                if (resultJson.actors.length > 0) { //if a project has at least one actor
+                    resultJson.actors.forEach(function (actor) {
+                        if (roleId == 10100) {
+                            developers.push({
+                                name: actor.name,
+                                //role: resultJson.name,
+                                projectId: projectId
+                            })
+                        } else if (roleId == 10101) {
+                            testers.push({
+                                name: actor.name,
+                                //role: resultJson.name,
+                                projectId: projectId
+                            })
+                        } else if (roleId == 10102) {
+                            viewers.push({
+                                name: actor.name,
+                                //role: resultJson.name,
+                                projectId: projectId
+                            })
+                        } else {
+                            projectAdmins.push({
+                                name: actor.name,
+                                //role: resultJson.name,
+                                projectId: projectId
+                            })
+                        }
+                    })
+                    console.log("Developers: " + JSON.stringify(developers)
+                    + "Testers: " + JSON.stringify(testers)
+                    + "Viewers: " + JSON.stringify(viewers)
+                    + "Project admins: " + JSON.stringify(projectAdmins));
+                }
             }
         });
 }
+
+/*  i.e.
+    SP-1: admin,
+    SP-2: valentin,
+    SP-3: ivan,
+    SP-4: valentin
+    usersOfProject = [admin, valentin, ivan]
+*/
+function getUsersOfProject() {
+    usersOfProject.length = 0; //clearing previous project users
+    issuesOfProject.forEach(function (issue) {
+        usersOfProject.push(
+            issue.assignee
+        )
+    })
+    uniqueProjectUsers.length = 0; //clearing previous project users
+    //clearing duplicates
+    $.each(usersOfProject, function (i, el) {
+        if ($.inArray(el, uniqueProjectUsers) === -1) uniqueProjectUsers.push(el);
+    });
+    //console.log("Users of project: " + JSON.stringify(usersOfProject));
+    console.log("Unique Users of project: " + JSON.stringify(uniqueProjectUsers));
+    appendUsers();
+}
+
 
 function buildIssues(res, issues) {
     // we only consider assigned issues
@@ -279,102 +365,6 @@ function buildIssues(res, issues) {
     }
 }
 
-function getCommentsOfIssue(issue) {
-    commentsOfProjectIssues.length = 0;
-    fetch("/jira/rest/api/2/issue/" + issue.key + "/comment")
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                return undefined;
-            }
-        })
-        .then(function (resultJson) {
-            if (resultJson !== undefined) {
-                console.log("COMMENTS ARE HERE: " + JSON.stringify(resultJson));
-                if (resultJson.total > 0) { //if an issue has at least one comment
-                    resultJson.comments.forEach(function (comment) {
-                        commentsOfProjectIssues.push({
-                            author: comment.author.name,
-                            body: comment.body
-                        })
-                    })
-                }
-                console.log("Users with comments: " + JSON.stringify(commentsOfProjectIssues));
-            }
-        });
-}
-
-// api token: KLUiCLiGSE5byvjA6fB88B89
-function getRolesOfProject() {
-    fetch("/jira/rest/api/2/project/" + currentProject + "/role")
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                return undefined;
-            }
-        })
-        .then(function (resultJson) {
-            if (resultJson !== undefined) {
-            }
-        });
-}
-
-
-function getUsersWithProjectRoles(roleId) {
-    fetch("/jira/rest/api/2/project/" + currentProject + "/role/" + roleId)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                return undefined;
-            }
-        })
-        .then(function (resultJson) {
-            if (resultJson !== undefined) {
-                console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
-                if (resultJson.actors.length > 0) { //if a project has at least one actor
-                    resultJson.actors.forEach(function (actor) {
-                        usersWithProjectRoles.push({
-                            name: actor.name,
-                            role: resultJson.name
-                        })
-                    })
-                    //console.log("Users with roles: " + JSON.stringify(usersWithProjectRoles));
-                }
-            }
-        });
-}
-
-
-/*  i.e.
-    SP-1: admin,
-    SP-2: valentin,
-    SP-3: ivan,
-    SP-4: valentin
-    usersOfProject = [admin, valentin, ivan]
-*/
-function getUsersOfProject() {
-    usersOfProject.length = 0; //clearing previous project users
-    issuesOfProject.forEach(function (issue) {
-        usersOfProject.push(
-            issue.assignee
-        )
-    })
-    uniqueProjectUsers.length = 0; //clearing previous project users
-    //clearing duplicates
-    $.each(usersOfProject, function (i, el) {
-        if ($.inArray(el, uniqueProjectUsers) === -1) uniqueProjectUsers.push(el);
-    });
-    console.log("Users of project: " + JSON.stringify(usersOfProject));
-    console.log("Unique Users of project: " + JSON.stringify(uniqueProjectUsers));
-    appendUsers();
-}
-
 /**
  * This function checks if the issue Due Date has passed.
  * @params dueDate, resolutionDate of the issue
@@ -390,5 +380,137 @@ function checkDueDate(dueDate, resolutionDate) {
 
 // ------------------- Function calls -----------------
 
+
 // getUsers();
 // getProjects();
+
+
+
+// not used
+// api token: KLUiCLiGSE5byvjA6fB88B89
+// function getRolesOfProject() {
+//     fetch("/jira/rest/api/2/project/" + currentProject + "/role")
+//         .then(function (response) {
+//             if (response.ok) {
+//                 return response.json();
+//             } else {
+//                 console.error("JIRA API call failed");
+//                 return undefined;
+//             }
+//         })
+//         .then(function (resultJson) {
+//             if (resultJson !== undefined) {
+//             }
+//         });
+// }
+
+//THESE FUNCTIONS WERE MERGED TO getUsersWithProjectRoles() function
+
+// function getDevelopers() {
+//     developers.length = 0;
+//     fetch("/jira/rest/api/2/project/" + currentProject + "/role/10100")
+//         .then(function (response) {
+//             if (response.ok) {
+//                 return response.json();
+//             } else {
+//                 console.error("JIRA API call failed");
+//                 return undefined;
+//             }
+//         })
+//         .then(function (resultJson) {
+//             if (resultJson !== undefined) {
+//                 //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
+//                 if (resultJson.actors.length > 0) { //if a project has at least one actor
+//                     resultJson.actors.forEach(function (actor) {
+//                         developers.push({
+//                             name: actor.name,
+//                             role: resultJson.name
+//                         })
+//                     })
+//                     console.log("DEVELOPERS: " + JSON.stringify(developers));
+//                 }
+//             }
+//         });
+// }
+
+
+// function getTesters() {
+//     testers.length = 0;
+//     fetch("/jira/rest/api/2/project/" + currentProject + "/role/10101")
+//         .then(function (response) {
+//             if (response.ok) {
+//                 return response.json();
+//             } else {
+//                 console.error("JIRA API call failed");
+//                 return undefined;
+//             }
+//         })
+//         .then(function (resultJson) {
+//             if (resultJson !== undefined) {
+//                 //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
+//                 if (resultJson.actors.length > 0) { //if a project has at least one actor
+//                     resultJson.actors.forEach(function (actor) {
+//                         testers.push({
+//                             name: actor.name,
+//                             role: resultJson.name
+//                         })
+//                     })
+//                     console.log("TESTERS: " + JSON.stringify(testers));
+//                 }
+//             }
+//         });
+// }
+
+// function getViewers() {
+//     viewers.length = 0;
+//     fetch("/jira/rest/api/2/project/" + currentProject + "/role/10102")
+//         .then(function (response) {
+//             if (response.ok) {
+//                 return response.json();
+//             } else {
+//                 console.error("JIRA API call failed");
+//                 return undefined;
+//             }
+//         })
+//         .then(function (resultJson) {
+//             if (resultJson !== undefined) {
+//                 //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
+//                 if (resultJson.actors.length > 0) { //if a project has at least one actor
+//                     resultJson.actors.forEach(function (actor) {
+//                         viewers.push({
+//                             name: actor.name,
+//                             role: resultJson.name
+//                         })
+//                     })
+//                     console.log("VIEWERS: " + JSON.stringify(viewers));
+//                 }
+//             }
+//         });
+// }
+
+// function getProjectManagers() {
+//     projectManagers.length = 0;
+//     fetch("/jira/rest/api/2/project/" + currentProject + "/role/10103")
+//         .then(function (response) {
+//             if (response.ok) {
+//                 return response.json();
+//             } else {
+//                 console.error("JIRA API call failed");
+//                 return undefined;
+//             }
+//         })
+//         .then(function (resultJson) {
+//             if (resultJson !== undefined) {
+//                 //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
+//                 if (resultJson.actors.length > 0) { //if a project has at least one actor
+//                     resultJson.actors.forEach(function (actor) {
+//                         projectManagers.push({
+//                             name: actor.name,
+//                             role: resultJson.name
+//                         })
+//                     })
+//                     console.log("PROJECT MANAGERS: " + JSON.stringify(projectManagers));
+//                 }
+//             }
+//         });
+// }

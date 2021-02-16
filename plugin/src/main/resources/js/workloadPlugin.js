@@ -57,7 +57,7 @@ function buildPieChart() {
         })
 
         var options = {
-            title: 'Number of assigned issues',
+            title: 'Issue assignment distribution',
             legend: { position: 'bottom', maxLines: 3 },
             is3D: true
         };
