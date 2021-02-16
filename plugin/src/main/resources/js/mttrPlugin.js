@@ -105,47 +105,47 @@ function calculateMttr(issues) {
     });
     if (lowestCount == 0) {
         issuesByPriority.push({
-            priority: "Lowest", recommended: 120, avgMttr: 0
+            priority: "Lowest", recommended: 120, avgMttr: 0, color: 'color: #FEF5DD'
         })
     } else {
         issuesByPriority.push({
-            priority: "Lowest", recommended: 120, avgMttr: lowestHours / lowestCount
+            priority: "Lowest", recommended: 120, avgMttr: lowestHours / lowestCount, color: 'color: #FEF5DD'
         })
     }
     if (lowCount == 0) {
         issuesByPriority.push({
-            priority: "Low", recommended: 96, avgMttr: 0
+            priority: "Low", recommended: 96, avgMttr: 0, color: 'color: #F9DA81'
         })
     } else {
         issuesByPriority.push({
-            priority: "Low", recommended: 96, avgMttr: lowHours / lowCount
+            priority: "Low", recommended: 96, avgMttr: lowHours / lowCount, color: 'color: #F9DA81'
         })
     }
     if (mediumCount == 0) {
         issuesByPriority.push({
-            priority: "Medium", recommended: 72, avgMttr: 0
+            priority: "Medium", recommended: 72, avgMttr: 0, color: 'color: #F4B841'
         })
     } else {
         issuesByPriority.push({
-            priority: "Medium", recommended: 72, avgMttr: mediumHours / mediumCount
+            priority: "Medium", recommended: 72, avgMttr: mediumHours / mediumCount, color: 'color: #F4B841'
         })
     }
     if (highCount == 0) {
         issuesByPriority.push({
-            priority: "High", recommended: 48, avgMttr: 0
+            priority: "High", recommended: 48, avgMttr: 0, color: 'color: #EE732E'
         })
     } else {
         issuesByPriority.push({
-            priority: "High", recommended: 48, avgMttr: highHours / highCount
+            priority: "High", recommended: 48, avgMttr: highHours / highCount, color: 'color: #EE732E'
         })
     }
     if (highestCount == 0) {
         issuesByPriority.push({
-            priority: "Highest", recommended: 24, avgMttr: 0
+            priority: "Highest", recommended: 24, avgMttr: 0, color: 'color: #C32928'
         })
     } else {
         issuesByPriority.push({
-            priority: "Highest", recommended: 24, avgMttr: highestHours / highestCount
+            priority: "Highest", recommended: 24, avgMttr: highestHours / highestCount, color: 'color: #C32928'
         })
     }
 
@@ -160,23 +160,24 @@ function calculateMttr(issues) {
         data.addColumn('string', 'Priority');
         data.addColumn('number', 'Recommended');
         data.addColumn('number', 'Actual');
+        data.addColumn({type:'string', role:'style'}); //needs to be after the values column
 
         issuesByPriority.forEach(function (issue) {
             data.addRows([
-                [issue.priority, issue.recommended, issue.avgMttr]
+                [issue.priority, issue.recommended, issue.avgMttr, issue.color]
             ]);
         })
 
         var options = {
             title: 'Mean time to resolve',
-            legend: { position: 'bottom', maxLines: 3 },
+            legend: { position: 'none'},
             width: "600",
             height: "300",
             hAxis: {
                 title: 'Priority of ticket',
             },
             vAxis: {
-                title: 'Hours'
+                title: 'Hours', format:'#h'
             },
             colors: ['#ccff66', '#e6693e'],
             is3D: true

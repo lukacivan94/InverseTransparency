@@ -105,17 +105,18 @@ function groupCommentsPerRoles() {
                 })
             }
         })
+        var totalNumberOfcomments = numberOfDevelopersComments+numberOfTestersComments+numberOfViewersComments+numberOfProjectAdminsComments;
         rolesWithCommentNumbers.push({
-            role: "Developers", numberOfComments: numberOfDevelopersComments
+            role: "Developers", numberOfComments: numberOfDevelopersComments/totalNumberOfcomments, color: 'color: #e4ff8a'
         })
         rolesWithCommentNumbers.push({
-            role: "Testers", numberOfComments: numberOfTestersComments
+            role: "Testers", numberOfComments: numberOfTestersComments/totalNumberOfcomments, color: 'color: #8aeaff'
         })
         rolesWithCommentNumbers.push({
-            role: "Viewers", numberOfComments: numberOfViewersComments
+            role: "Viewers", numberOfComments: numberOfViewersComments/totalNumberOfcomments, color: 'color: #ffea8a'
         })
         rolesWithCommentNumbers.push({
-            role: "Project Administrators", numberOfComments: numberOfProjectAdminsComments
+            role: "Project Administrators", numberOfComments: numberOfProjectAdminsComments/totalNumberOfcomments, color: 'color: #f59b47'
         })
     }
 }
@@ -129,26 +130,26 @@ function buildChart() {
 
         data.addColumn('string', 'Role');
         data.addColumn('number', 'Comments');
+        data.addColumn({type:'string', role:'style'}); //needs to be after the values column
 
         rolesWithCommentNumbers.forEach(function (role) {
             data.addRows([
-                [role.role, role.numberOfComments]
+                [role.role, role.numberOfComments, role.color]
             ]);
         })
 
         var options = {
-            title: 'Issues per role',
-            legend: { position: 'top', maxLines: 3 },
-            width: "650",
+            title: 'Comments per role',
+            legend: {position: 'none'},
+            width: "620",
             height: "400",
             hAxis: {
                 title: 'Role',
             },
             vAxis: {
-                title: 'Number of comments'
+                title: 'Number of comments', format:'#%'
             },
-            colors: ['#ccff66', '#e6693e'],
-            is3D: true
+            
         };
 
         var chart = new google.visualization.ColumnChart(

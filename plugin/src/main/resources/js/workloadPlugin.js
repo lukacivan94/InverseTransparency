@@ -27,10 +27,19 @@ function appendUsers() {
                 //numberOfAssignedIssues--;
             }
         })
-        usersWithNumberOfIssues.push({
-            user: user,
-            numberOfIssues: numberOfIssues
-        })
+        if (user == 'Unassigned') {
+            usersWithNumberOfIssues.push({
+                user: user,
+                numberOfIssues: numberOfIssues,
+                color: 'color: #1678CC'
+            })
+        } else {
+            usersWithNumberOfIssues.push({
+                user: user,
+                numberOfIssues: numberOfIssues
+            })
+        }
+
         //console.log("USERS AND ISSUE NUMBER: " + JSON.stringify(usersWithNumberOfIssues));
     })
     //console.log("Number of unassigned: " + issuesOfProject.length - numberOfAssignedIssues)
@@ -49,10 +58,11 @@ function buildPieChart() {
 
         data.addColumn('string', 'User');
         data.addColumn('number', 'Number of Issues');
+        data.addColumn({ type: 'string', role: 'style' }); //needs to be after the values column
 
         usersWithNumberOfIssues.forEach(function (user) {
             data.addRows([
-                [user.user, user.numberOfIssues]
+                [user.user, user.numberOfIssues, user.color]
             ]);
         })
 
