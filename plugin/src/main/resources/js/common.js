@@ -202,10 +202,10 @@ function getUsersWithProjectRoles(projectId, roleId) {
                             })
                         }
                     })
-                    console.log("Developers: " + JSON.stringify(developers)
-                    + "Testers: " + JSON.stringify(testers)
-                    + "Viewers: " + JSON.stringify(viewers)
-                    + "Project admins: " + JSON.stringify(projectAdmins));
+                    // console.log("Developers: " + JSON.stringify(developers)
+                    // + "Testers: " + JSON.stringify(testers)
+                    // + "Viewers: " + JSON.stringify(viewers)
+                    // + "Project admins: " + JSON.stringify(projectAdmins));
                 }
             }
         });

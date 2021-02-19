@@ -54,7 +54,7 @@ function calculateMttr(issues) {
         //number of hours between
         var hours = Math.abs(created - resolved) / 36e5;
         console.log("HOURS ARE HERE:" + hours);
-        if (resolved !== null) {
+        if (issue.resolutiondate !== null) {
             if (issue.priority == "Lowest") {
                 lowestIssues.push({
                     key: issue.key,

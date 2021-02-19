@@ -10,7 +10,33 @@ var loggedInUser;
 var retrievedUser;
 var unlocked = false;
 
-//first getting vague data on user then chain 
+//works
+// getting the email of the assignee (data owner whose data we look at)
+function directRequest(assignee, issueKey) {
+    fetch("http://localhost:2990/jira/rest/api/2/user?username=" + assignee)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("JIRA API call failed");
+                return undefined;
+            }
+        })
+        .then(function (resultJson) {
+            if (resultJson !== undefined) {
+                console.log(JSON.stringify(resultJson));
+                retrievedUser = {
+                    key: resultJson.key,
+                    name: resultJson.name,
+                    emailAddress: resultJson.emailAddress
+                }
+                console.log("Retrieved user details: " + JSON.stringify(retrievedUser));
+                getLoggedInUser(retrievedUser, issueKey);
+            }
+        });
+}
+
+// getting vague data on logged in user (data consumer) then chain 
 //request to get detailed data and save it to loggedInUser variable
 function getLoggedInUser(retrievedUser, issueKey) {
     fetch("/jira/rest/auth/latest/session")
@@ -35,30 +61,7 @@ function getLoggedInUser(retrievedUser, issueKey) {
         });    
 }
 
-//works
-function directRequest(assignee, issueKey) {
-    fetch("http://localhost:2990/jira/rest/api/2/user?username=" + assignee)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                return undefined;
-            }
-        })
-        .then(function (resultJson) {
-            if (resultJson !== undefined) {
-                console.log(JSON.stringify(resultJson));
-                retrievedUser = {
-                    key: resultJson.key,
-                    name: resultJson.name,
-                    emailAddress: resultJson.emailAddress
-                }
-                console.log("Retrieved user details: " + JSON.stringify(retrievedUser));
-                getLoggedInUser(retrievedUser, issueKey);
-            }
-        });
-}
+
 
 function fetchDirect(requestBody) {
     const fetchBody = {
@@ -146,38 +149,15 @@ function buildCalendar(issues) {
     console.log("Calendar has been built");
 }
 
-/**
- * This function either shows a modal to enter username and password or returns the encrypted username and password.
- */
-function getUserData() {
-    if (localStorage.userP === undefined) {
-        $("#spacerbox").append($('<div id="modalLogin" class="modal" tabindex="-1" role="dialog"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">Login</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body"> <div class="form-group"> <label for="inputUser">Username:</label> <input class="form-control" type="text" id="inputUser" placeholder="Username"> <label for="inputPass">Password:</label> <input class="form-control" type="password" id="inputPass" placeholder="Password"></div> </div> <div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> <button type="button" class="btn btn-primary" onClick="login()">Login</button> </div> </div> </div> </div>'));
-        $('#modalLogin').modal('show');
-        return { userP: undefined, user: undefined };
-    }
-    else {
-        return { userP: localStorage.userP, user: localStorage.user };
-    }
-}
-
-/**
- * This function gets called from the "Login"-button in the modal and logs the user in.
- */
-function login() {
-    const username = $('#inputUserO').val();
-    const password = $('#inputPass').val();
-
-    localStorage.userP = btoa(username + ":" + password);
-    localStorage.user = username;
-
-    window.location.reload(true);
-    console.log("logged in user: " + username);
-}
-
 //works
 function queryRequest() {
 
-    const requestBody = '{"data_types":["string"],"justification":"this is a query test from Ivan","tool":"jira","user":"demo1_jira","owners":["demo1@example.com"]}'
+    const owners = ['"jan@example.com"', '"lukac.ivan94@gmail.com"'];
+    
+    //owners.push("jan@example.com");
+    //owners.push("lukac.ivan94@gmail.com");
+    console.log("OWNERS: " + owners);
+    const requestBody = '{"data_types":["string"],"justification":"this is a query test from Ivan","tool":"jira","user":"demo1_jira","owners": ['+owners+']}'
 
     const fetchBody = {
         method: "POST",
@@ -330,6 +310,37 @@ function toggleIssueDetails() {
     console.log("Unlocked: " + unlocked);
     buildCalendar(issuesOfUser);
 }
+
+
+
+/**
+ * This function either shows a modal to enter username and password or returns the encrypted username and password.
+ */
+function getUserData() {
+    if (localStorage.userP === undefined) {
+        $("#spacerbox").append($('<div id="modalLogin" class="modal" tabindex="-1" role="dialog"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">Login</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body"> <div class="form-group"> <label for="inputUser">Username:</label> <input class="form-control" type="text" id="inputUser" placeholder="Username"> <label for="inputPass">Password:</label> <input class="form-control" type="password" id="inputPass" placeholder="Password"></div> </div> <div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> <button type="button" class="btn btn-primary" onClick="login()">Login</button> </div> </div> </div> </div>'));
+        $('#modalLogin').modal('show');
+        return { userP: undefined, user: undefined };
+    }
+    else {
+        return { userP: localStorage.userP, user: localStorage.user };
+    }
+}
+
+/**
+ * This function gets called from the "Login"-button in the modal and logs the user in.
+ */
+function login() {
+    const username = $('#inputUserO').val();
+    const password = $('#inputPass').val();
+
+    localStorage.userP = btoa(username + ":" + password);
+    localStorage.user = username;
+
+    window.location.reload(true);
+    console.log("logged in user: " + username);
+}
+
 
 // ------------------- Function calls -----------------
 
