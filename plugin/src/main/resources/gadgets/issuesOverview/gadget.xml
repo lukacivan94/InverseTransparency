@@ -55,22 +55,36 @@
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <!-- %       [ETHICAL_SSE] Enter your HTML below       % -->
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:550px">
+            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:600">
                 <div class="row justify-content-center" style="margin-top: 15px">
                     <h4>Issues overview</h4>
                 </div>
                 <div class="row justify-content-center" style="margin-top: 15px">
-                    <p id="viewSelector">list view | <a href="#" class="calendarView">calendar view</a> | <a href="#" class="projectView">project view</a></p>
+                    <p id="viewSelector">calendar view | <a href="#" class="listView">list view</a> | <a href="#" class="projectView">project view</a></p>
                 </div>
                 <div id="selectUserDiv"class="row justify-content-center" style="margin-top: 15px">
                     <select id="selectUser" onchange="getIssuesOfUser()">
-                        <option>Select the User</option>
+                        
                     </select>
                 </div>
                 <div id="selectProjectDiv"class="row justify-content-center" style="margin-top: 15px">
                     <select id="selectProject" onchange="getIssuesOfProject()">
                         <option>Select the Project</option>
                     </select>
+                </div>
+                <div id="hoverMessage" class="row justify-content-center" style="margin-top: 15px; height:500; background-color:#ffd6d6">
+                    <div class="modal-header" style="margin-top: 15px; height:50">
+                        <h5 class="modal-title">Inverse Transparency Notice</h5>
+                    </div>
+                    <div class="modal-body" style="margin-top: 15px; height:50">
+                        <div class="form-group">
+                            <h5 class="modal-title">The user made a rule not to disclose this data</h5>
+                            <h5 class="modal-title">You can select another user from the dropdown</h5>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="margin-top: 15px; height:50">
+                        <label>This is a Inverse Transparency plugin feature</label>
+                    </div>
                 </div>
                 <div id="listView">
                     <div class="row justify-content-center" style="margin-top: 15px">
@@ -91,9 +105,6 @@
                 </div>
                 <div id="calendarView" height:400px>
                     <div id='calendar' style="margin-top: 15px"></div>
-                    <div id='hoverMessage' style=position: center; display: none; width: 100%; background-color: rgba(0,0,0,0.5); z-index: 2;>
-                        <label>By clicking on issue you can see the details and data subject will get notified<label>
-                    </div>
                 </div>
                 <div id="projectView">
                     <div class="row justify-content-center" style="margin-top: 15px">
@@ -114,11 +125,6 @@
                             </tr>
                         </table>
                     </div>
-                </div>
-                <div class="row justify-content-center" style="margin-top: 15px">
-                    <button type="button" onClick="directRequest()">Direct Request</button>
-                    <button type="button" onClick="queryRequest()">Query Request</button>
-                    <button type="button" onClick="toggleIssueDetails()">Toggle Issue Details</button>
                 </div>
                 
             </div>
@@ -150,6 +156,7 @@
             </script>
             <!-- [ETHICAL_SSE] Your plugin logic is imported here -->
             <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/common.js"></script>
+            <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/framework.js"></script>
             <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/issuesOverview.js"></script>
             <!-- Remove the loading indicator as soon as the script above has terminated. -->
             <script type="text/javascript">

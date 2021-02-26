@@ -21,6 +21,7 @@ const projectAdmins = [];
 
 var currentUser;
 var currentProject;
+var noticeAccepted = false;
 
 // ------------------- Functions -----------------
 
@@ -109,6 +110,7 @@ function getProjects() {
  * This function gets all issues from the user and stores them in issues.
  */
 function getIssuesOfUser() {
+    $("#hoverMessage").hide();
     issuesOfUser.length = 0;
     currentUser = document.getElementById('selectUser').value;
     console.log("Current user is: " + currentUser);
@@ -123,11 +125,11 @@ function getIssuesOfUser() {
         })
         .then(function (resultJson) {
             if (resultJson !== undefined) {
-                console.log("[ISSUES]: " + JSON.stringify(resultJson));
+                //console.log("[ISSUES]: " + JSON.stringify(resultJson));
                 resultJson.issues.forEach(function (res) {
                     buildIssues(res, issuesOfUser);
                 });
-                console.log("There are " + issuesOfUser.length + " issues: " + JSON.stringify(issuesOfUser));
+                //console.log("There are " + issuesOfUser.length + " issues: " + JSON.stringify(issuesOfUser));
                 appendIssues(issuesOfUser);
             }
         });

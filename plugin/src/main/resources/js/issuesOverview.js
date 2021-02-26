@@ -6,189 +6,46 @@
 // ------------------- Variables -----------------
 
 
-var loggedInUser;
-var retrievedUser;
 var unlocked = false;
 
-//works
-// getting the email of the assignee (data owner whose data we look at)
-function directRequest(assignee, issueKey) {
-    fetch("http://localhost:2990/jira/rest/api/2/user?username=" + assignee)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                return undefined;
-            }
-        })
-        .then(function (resultJson) {
-            if (resultJson !== undefined) {
-                console.log(JSON.stringify(resultJson));
-                retrievedUser = {
-                    key: resultJson.key,
-                    name: resultJson.name,
-                    emailAddress: resultJson.emailAddress
-                }
-                console.log("Retrieved user details: " + JSON.stringify(retrievedUser));
-                getLoggedInUser(retrievedUser, issueKey);
-            }
-        });
-}
 
-// getting vague data on logged in user (data consumer) then chain 
-//request to get detailed data and save it to loggedInUser variable
-function getLoggedInUser(retrievedUser, issueKey) {
-    fetch("/jira/rest/auth/latest/session")
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                return undefined;
-            }
-        })
-        .then(function (resultJson) {
-            if (resultJson !== undefined) {
-                console.log(JSON.stringify(resultJson));
-                loggedInUser = resultJson.name;
-                console.log("Logged in user details: " + JSON.stringify(loggedInUser) +
-                "retrieved user: " + retrievedUser);
-                const requestBody = '{"data_types":["string"],"justification":"T: ' + issueKey + '","tool":"jira","user":"'+loggedInUser+'","owner":"' + retrievedUser.emailAddress + '"}'
+// ------------------- Functions -----------------
 
-                fetchDirect(requestBody);
-            }
-        });    
-}
+function appendIssues(issues) {
 
+    directRequest(issues[0].assignee, issues[0].key);
 
+    //console.log("Within appendIssues function: " + issues.length);
+    var table = document.getElementById("userIssuesTable");
 
-function fetchDirect(requestBody) {
-    const fetchBody = {
-        method: "POST",
-        headers: {
-            accept: "application/json",
-            Authorization: "Basic " + btoa("techie:some_body_00"),
-            "Content-Type": "application/json"
-        },
-        body: requestBody
+    // Clear the table from previous issues - anything but the header row
+    for (var i = table.rows.length - 1; i > 0; i--) {
+        table.deleteRow(i);
     };
 
-    fetch("https://overseer.sse.in.tum.de/request-access/direct", fetchBody)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
+    issues.forEach(function (object) {
+        //console.log("Within foreach:" + object.key);
+
+        if (object.assignee !== "Unassigned") {
+            var tr = document.createElement("tr");
+            if (object.category == "red") {
+                tr.innerHTML = "<td style='text-align:center'>" + object.key + "</td>" +
+                    "<td style='text-align:center'>" + object.duedate + "</td>" +
+                    "<td style='text-align:center; background-color:#FF6A4B'>" + object.category + "</td>";
             } else {
-                console.error("JIRA API call failed");
-                console.log("[ERROR]: " + response.json())
-                return undefined;
+                tr.innerHTML = "<td style='text-align:center'>" + object.key + "</td>" +
+                    "<td style='text-align:center'>" + object.duedate + "</td>" +
+                    "<td style='text-align:center; background-color:#DBFFAB'>" + object.category + "</td>";
             }
-        }).then(function (resultJson) {
-            if (resultJson !== undefined) {
-                console.log("Answer: " + JSON.stringify(resultJson));
-            }
-        });
-}
-
-/**
- * This function builds the Calendar and displays issues of the selected user
- */
-function buildCalendar(issues) {
-    //document.addEventListener('DOMContentLoaded', function () {//});
-    var calendarEl = document.getElementById('calendar');
-    if (unlocked) {
-        var events = issues.map(issue => {
-            return {
-                id: issue.key,
-                groupId: issue.assignee,
-                title: issue.key,
-                start: issue.duedate,
-                color: issue.category,
-                assignee: issue.assignee,
-                tip: "By clicking on issue you can see the details and data subject will get notified"
-            }
-        })
-    } else {
-        var events = issues.map(issue => {
-            return {
-                id: issue.key, //populating id with issue key
-                groupId: issue.assignee, //populating groupId with assignee
-                title: "Not requested",
-                start: issue.duedate,
-                color: issue.category,
-                assignee: issue.assignee,
-                tip: "By clicking on issue you can see the details and data subject will get notified"
-            }
-        })
-    }
-    console.log("Issues within buildCalendar: " + JSON.stringify(issues));
-
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        initialDate: '2021-01-07',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: events,
-        eventClick: function (info) {
-            console.log("This is the assignee from event: " + info.event.groupId + ", key: " + info.event.id);
-            directRequest(info.event.groupId, info.event.id);
-        },
-        eventMouseEnter: function (event) {
-            $('#hoverMessage').show();
-        },
-        eventMouseLeave: function (event) {
-            $('#hoverMessage').hide();
+            table.appendChild(tr);
         }
     });
-
-    calendar.render();
-
-    console.log("Calendar has been built");
+    buildCalendar(issues);
 }
-
-//works
-function queryRequest() {
-
-    const owners = ['"jan@example.com"', '"lukac.ivan94@gmail.com"'];
-    
-    //owners.push("jan@example.com");
-    //owners.push("lukac.ivan94@gmail.com");
-    console.log("OWNERS: " + owners);
-    const requestBody = '{"data_types":["string"],"justification":"this is a query test from Ivan","tool":"jira","user":"demo1_jira","owners": ['+owners+']}'
-
-    const fetchBody = {
-        method: "POST",
-        headers: {
-            accept: "application/json",
-            Authorization: "Basic " + btoa("techie:some_body_00"),
-            "Content-Type": "application/json"
-        },
-        body: requestBody
-    };
-
-    fetch("https://overseer.sse.in.tum.de/request-access/query", fetchBody)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("JIRA API call failed");
-                console.log("[ERROR]: " + response.json())
-                return undefined;
-            }
-        }).then(function (resultJson) {
-            if (resultJson !== undefined) {
-                console.log("Answer: " + JSON.stringify(resultJson));
-            }
-        });
-}
-
 
 //provide a list of users 
 function appendUsers() {
-    console.log("Within appendUsers function: " + uniqueProjectUsers.length);
+    //console.log("Within appendUsers function: " + uniqueProjectUsers.length);
     var table = document.getElementById("projectUsersTable");
 
     // Clear the table from previous users - anything but the header row
@@ -197,7 +54,7 @@ function appendUsers() {
     };
     uniqueProjectUsers.forEach(function (user) {
         var sortedIssues = sortUserIssues(user);
-        console.log("[ISSUES]: " + JSON.stringify(sortedIssues));
+        //console.log("[ISSUES]: " + JSON.stringify(sortedIssues));
         var tr = document.createElement("tr");
 
         tr.innerHTML = "<td style='text-align:center'>" + user + "</td>" +
@@ -206,6 +63,7 @@ function appendUsers() {
             "<td style='text-align:center; background-color:#FF6A4B'>" + sortedIssues.successRate + "</td>";
         table.appendChild(tr);
     });
+    queryRequest(uniqueProjectUsers);
 }
 
 function sortUserIssues(user) {
@@ -222,7 +80,7 @@ function sortUserIssues(user) {
     }
     var totalIssues = numberOfGreenIssues + numberOfRedIssues;
     var successRate = Math.round(numberOfGreenIssues / totalIssues * 100) + "%";
-    console.log("[SUCCESS RATE]: " + successRate);
+    //console.log("[SUCCESS RATE]: " + successRate);
     return {
         user: user,
         numberOfRedIssues: numberOfRedIssues,
@@ -231,30 +89,53 @@ function sortUserIssues(user) {
     };
 }
 
-function appendIssues(issues) {
-    //console.log("Within appendIssues function: " + issues.length);
-    var table = document.getElementById("userIssuesTable");
-
-    // Clear the table from previous issues - anything but the header row
-    for (var i = table.rows.length - 1; i > 0; i--) {
-        table.deleteRow(i);
-    };
-
-    issues.forEach(function (object) {
-        //console.log("Within foreach:" + object.key);
-        var tr = document.createElement("tr");
-        if (object.category == "red") {
-            tr.innerHTML = "<td style='text-align:center'>" + object.key + "</td>" +
-                "<td style='text-align:center'>" + object.duedate + "</td>" +
-                "<td style='text-align:center; background-color:#FF6A4B'>" + object.category + "</td>";
-        } else {
-            tr.innerHTML = "<td style='text-align:center'>" + object.key + "</td>" +
-                "<td style='text-align:center'>" + object.duedate + "</td>" +
-                "<td style='text-align:center; background-color:#DBFFAB'>" + object.category + "</td>";
+/**
+ * This function builds the Calendar and displays issues of the selected user
+ */
+function buildCalendar(issues) {
+    if($("#hoverMessage").is(":visible")){
+        console.log("Hover message is visible, Calendar not building")
+        return;
+    }
+    //document.addEventListener('DOMContentLoaded', function () {//});
+    var calendarEl = document.getElementById('calendar');
+    var events = issues.map(issue => {
+        return {
+            id: issue.key,
+            groupId: issue.assignee,
+            title: issue.key,
+            start: issue.duedate,
+            color: issue.category,
+            assignee: issue.assignee,
+            tip: "By clicking on issue you can see the details and data subject will get notified"
         }
+    })
+    console.log("Issues within buildCalendar: " + JSON.stringify(issues));
 
-        table.appendChild(tr);
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        initialDate: '2021-01-07',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: events,
+        eventClick: function (info) {
+            console.log("This is the assignee from event: " + info.event.groupId + ", key: " + info.event.id);
+            directRequest(info.event.groupId, info.event.id);
+        },
+        // eventMouseEnter: function (event) {
+        //     $('#hoverMessage').show();
+        // },
+        // eventMouseLeave: function (event) {
+        //     $('#hoverMessage').hide();
+        // }
     });
+
+    calendar.render();
+
+    console.log("Calendar has been built");
 }
 
 function displayHoverMessage() {
@@ -269,10 +150,12 @@ function hideHoverMessage() {
 
 /** 
  * This function switches between different views of the plugin
- * List / Calendat / Project view
+ * List / Calendar / Project view
 */
 function switchViews() {
-    $("#calendarView").hide();
+    //$("#calendarView").hide();
+    $("#hoverMessage").hide();
+    $("#listView").hide();
     $("#projectView").hide();
     $("#selectProjectDiv").hide();
     $('#viewSelector').on('click', 'a', function () {
@@ -282,8 +165,14 @@ function switchViews() {
             $("#projectView").hide();
             $("#selectProjectDiv").hide();
             $("#selectUserDiv").show();
-            $("#viewSelector").html('<a href="#" class="listView">list view</a> | calendar view | <a href="#" class="projectView">project view</a>');
-            buildCalendar(issuesOfUser);
+            $("#viewSelector").html('calendar view | <a href="#" class="listView">list view</a> | <a href="#" class="projectView">project view</a>');
+            $.ajax({
+                url: getIssuesOfUser(),
+                success: function () {
+                    buildCalendar(issuesOfUser);
+                }
+            });
+            //buildCalendar(issuesOfUser);
         }
         if ($(this).hasClass("listView")) {
             $("#listView").show();
@@ -291,7 +180,7 @@ function switchViews() {
             $("#projectView").hide();
             $("#selectProjectDiv").hide();
             $("#selectUserDiv").show();
-            $("#viewSelector").html('list view | <a href="#" class="calendarView">calendar view</a> | <a href="#" class="projectView">project view</a>');
+            $("#viewSelector").html('<a href="#" class="calendarView">calendar view</a> | list view | <a href="#" class="projectView">project view</a>');
         }
         if ($(this).hasClass("projectView")) {
             $("#listView").hide();
@@ -299,7 +188,7 @@ function switchViews() {
             $("#projectView").show();
             $("#selectUserDiv").hide();
             $("#selectProjectDiv").show();
-            $("#viewSelector").html('<a href="#" class="listView">list view</a> | <a href="#" class="calendarView">calendar view</a> | project view');
+            $("#viewSelector").html('<a href="#" class="calendarView">calendar view</a> | <a href="#" class="listView">list view</a> | project view');
         }
         return false;
     });
@@ -311,34 +200,22 @@ function toggleIssueDetails() {
     buildCalendar(issuesOfUser);
 }
 
-
-
 /**
- * This function either shows a modal to enter username and password or returns the encrypted username and password.
- */
-function getUserData() {
-    if (localStorage.userP === undefined) {
-        $("#spacerbox").append($('<div id="modalLogin" class="modal" tabindex="-1" role="dialog"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">Login</h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body"> <div class="form-group"> <label for="inputUser">Username:</label> <input class="form-control" type="text" id="inputUser" placeholder="Username"> <label for="inputPass">Password:</label> <input class="form-control" type="password" id="inputPass" placeholder="Password"></div> </div> <div class="modal-footer"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> <button type="button" class="btn btn-primary" onClick="login()">Login</button> </div> </div> </div> </div>'));
-        $('#modalLogin').modal('show');
-        return { userP: undefined, user: undefined };
-    }
-    else {
-        return { userP: localStorage.userP, user: localStorage.user };
+ * This function  */
+function displayNotice() {
+    if (!noticeAccepted) {
+        $("#spacerbox").append($('<div id="modalNotice" class="modal" tabindex="-1" role="dialog" style="height:600"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">Inverse Transparency Notice</h5></div> <div class="modal-body"> <div class="form-group"> <label for="noticeText1">This Dashboard gadget is part of the Inverse Transparency plugin</label><label for="noticeText2">By continuing you agree to exposing your username to the respective data owner whose data you are accessing.</label> </div> </div> <div class="modal-footer">  <button type="button" class="btn btn-primary" onClick="acceptNotice()">Accept and Continue</button> </div> </div> </div> </div>'));
+        $('#modalNotice').modal('show');
     }
 }
 
 /**
- * This function gets called from the "Login"-button in the modal and logs the user in.
+ * This function 
  */
-function login() {
-    const username = $('#inputUserO').val();
-    const password = $('#inputPass').val();
-
-    localStorage.userP = btoa(username + ":" + password);
-    localStorage.user = username;
-
-    window.location.reload(true);
-    console.log("logged in user: " + username);
+function acceptNotice() {
+    noticeAccepted = true;
+    $('#modalNotice').modal('hide');
+    console.log("Notice has now been hidden and is set to: " + noticeAccepted);
 }
 
 
@@ -350,7 +227,7 @@ getProjects();
 switchViews();
 //getUsers();
 //getProjects();
-getUserData();
+displayNotice();
 //getLoggedInUser();
 //getUserDetails();
 //getLoggedInUserDetails();

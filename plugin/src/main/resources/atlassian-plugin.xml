@@ -23,6 +23,10 @@
     <param name="content-type" value="application/javascript" />
   </resource>
 
+  <resource type="download" name="framework.js" location="js/framework.js">
+    <param name="content-type" value="application/javascript" />
+  </resource>
+
   <resource type="download" name="communicationPlugin.js" location="js/communicationPlugin.js">
     <param name="content-type" value="application/javascript" />
   </resource>
