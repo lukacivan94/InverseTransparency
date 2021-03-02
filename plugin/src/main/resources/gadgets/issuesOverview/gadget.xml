@@ -13,6 +13,7 @@
             </Param>
         </Optional>
         <Require feature="setprefs" />
+        <Require feature="opensocial-0.8"/>
         <Require feature="views" />
         <Require feature="dynamic-height" />
         <Require feature="oauthpopup" />
@@ -22,16 +23,12 @@
     </ModulePrefs>
     <!-- bellow line added to fix the error -->
     <UserPref name="refresh" datatype="hidden" default_value="false" />
-    <UserPref
-            name="isConfigured"
-            datatype="hidden"
-            default_value="false" />
+    <UserPref name="isConfigured" datatype="hidden" default_value="false" />
+    <UserPref name="isAccepted" datatype="hidden" default_value="0" />
     <Content
             type="html"
             view="profile">
         <![CDATA[
-            
-  
         
         <!-- Required for the Atlassian gadget framework -->
             #requireResource("com.atlassian.gadgets.publisher:ajs-gadgets")
@@ -39,11 +36,10 @@
 
             #includeResources()
   
-        
-        
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.0/main.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <!-- link rel="stylesheet" href="pluginStyle.css" -->
             <!-- Bootstrap JS + Requirements -->
             <script src="http://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -55,10 +51,22 @@
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <!-- %       [ETHICAL_SSE] Enter your HTML below       % -->
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+            <div id="header">
+                <button 
+                    onclick=" window.open('https://www.forschung-it-sicherheit-kommunikationssysteme.de/projekte/inv_transparenz','_blank')" 
+                    title="This Dashboard gadget is part of the Inverse Transparency plugin. Learn more" 
+                    style="font-size:10px; border: none; width: 100%; background-color: transparent; text-align: right;">
+                        Inverse Transparency 
+                        <i class="fa fa-eye"></i>
+                </button>
+            </div>
             <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:600">
                 <div class="row justify-content-center" style="margin-top: 15px">
-                    <h4>Issues overview</h4>
+                    <h4>Issues overview </h4>
                 </div>
+                <button onCLick="setAcceptedToTrue()">
+                        Set accepted to true
+                </button>
                 <div class="row justify-content-center" style="margin-top: 15px">
                     <p id="viewSelector">calendar view | <a href="#" class="listView">list view</a> | <a href="#" class="projectView">project view</a></p>
                 </div>
