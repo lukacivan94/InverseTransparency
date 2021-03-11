@@ -20,24 +20,18 @@ const projectAdmins = [];
 
 var currentUser;
 var currentProject;
-var noticeAccepted = false;
 
-var prefs = new gadgets.Prefs();
+
 
 // ------------------- Functions -----------------
 
-function setAcceptedToTrue() {
-    prefs.set("isAccepted", 0);
-    console.log("Is accepted: " + prefs.getInt("isAccepted"))
-}
+
 
 /**
  * This function returns a list of all users and saves them in users array. 
  * It populates the User Select
  */
 function getUsers() {
-
-    console.log("Is accepted: " + prefs.getInt("isAccepted"));
     fetch("/jira/rest/api/2/user/search?username=.&maxResults=2000")
         .then(function (response) {
             if (response.ok) {
@@ -144,6 +138,7 @@ function getIssuesOfUser() {
 };
 
 function getIssuesOfProject() {
+    $("#hoverMessage").hide();
     issuesOfProject.length = 0;
     currentProject = document.getElementById('selectProject').value;
     console.log("Current project is: " + currentProject);

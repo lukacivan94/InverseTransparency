@@ -16,6 +16,7 @@ const highestIssues = [];
 
 
 function switchViews() {
+    $("#hoverMessage").hide();
     $("#projectView").hide();
     $("#selectProjectDiv").hide();
     $('#viewSelector').on('click', 'a', function () {
@@ -40,6 +41,9 @@ function switchViews() {
 //this function needs to push issues to chart
 function appendIssues(issues) {
     console.log("Life is good");
+    issues.forEach(function (issue) {
+        directRequest(issue.assignee, issue.key);
+    })
     calculateMttr(issues);
 }
 
@@ -160,7 +164,7 @@ function calculateMttr(issues) {
         data.addColumn('string', 'Priority');
         data.addColumn('number', 'Recommended');
         data.addColumn('number', 'Actual');
-        data.addColumn({type:'string', role:'style'}); //needs to be after the values column
+        data.addColumn({ type: 'string', role: 'style' }); //needs to be after the values column
 
         issuesByPriority.forEach(function (issue) {
             data.addRows([
@@ -170,14 +174,14 @@ function calculateMttr(issues) {
 
         var options = {
             title: 'Mean time to resolve',
-            legend: { position: 'none'},
+            legend: { position: 'none' },
             width: "600",
             height: "300",
             hAxis: {
                 title: 'Priority of ticket',
             },
             vAxis: {
-                title: 'Hours', format:'#h'
+                title: 'Hours', format: '#h'
             },
             colors: ['#ccff66', '#e6693e'],
             is3D: true
@@ -201,3 +205,4 @@ function appendUsers() {
 switchViews();
 getUsers();
 getProjects();
+displayNotice();

@@ -17,6 +17,7 @@ function appendIssues(issues) {
 // uniqueProjectUsers array has already been populated with the getProjects function call
 // and can be used here
 function appendUsers() {
+    queryRequest(uniqueProjectUsers);
     usersWithNumberOfIssues.length = 0;
     //var numberOfAssignedIssues = issuesOfProject.length;
     uniqueProjectUsers.forEach(function (user) {
@@ -78,6 +79,13 @@ function buildPieChart() {
     }
 }
 
+function switchViews(){
+    $("#hoverMessage").hide();
+}
+
+
 // ------------------- Function calls -----------------
 
 getProjects();
+displayNotice();
+switchViews();

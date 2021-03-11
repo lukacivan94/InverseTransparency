@@ -22,10 +22,8 @@
     </ModulePrefs>
     <!-- bellow line added to fix the error -->
     <UserPref name="refresh" datatype="hidden" default_value="false" />
-    <UserPref
-            name="isConfigured"
-            datatype="hidden"
-            default_value="false" />
+    <UserPref name="isConfigured" datatype="hidden" default_value="false" />
+    <UserPref name="isAccepted" datatype="hidden" default_value="0" />
     <Content
             type="html"
             view="profile">
@@ -52,7 +50,7 @@
             <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <div id="header">
                 <button 
-                    onclick=" window.open('https://www.forschung-it-sicherheit-kommunikationssysteme.de/projekte/inv_transparenz','_blank')" 
+                    onclick=" window.open('https://www.inversetransparenz.de/','_blank')" 
                     title="This Dashboard gadget is part of the Inverse Transparency plugin. Learn more" 
                     style="font-size:10px; border: none; width: 100%; background-color: transparent; text-align: right;">
                         Inverse Transparency 
@@ -63,10 +61,27 @@
                 <div class="row justify-content-center" style="margin-top: 15px">
                     <h4>Workload overview</h4>
                 </div>
+                <button onCLick="setAcceptedToFalse()">
+                        Set accepted to false
+                </button>
                 <div id="selectProjectDiv" class="row justify-content-center" style="margin-top: 15px">
                     <select id="selectProject" onchange="getIssuesOfProject()">
                         <option>Select the Project</option>
                     </select>
+                </div>
+                <div id="hoverMessage" class="row justify-content-center" style="margin-top: 15px; height:500; background-color:#ffd6d6">
+                    <div class="modal-header" style="margin-top: 15px; height:50">
+                        <h5 class="modal-title">Inverse Transparency Notice</h5>
+                    </div>
+                    <div class="modal-body" style="margin-top: 15px; height:50">
+                        <div class="form-group">
+                            <h5 class="modal-title">User(s) made a rule not to disclose this data</h5>
+                            <h5 class="modal-title">You can select another user or project from the dropdown</h5>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="margin-top: 15px; height:50">
+                        <label>This is a Inverse Transparency plugin feature</label>
+                    </div>
                 </div>
                 <div id="piechart" style="width: 450px; height: 400px;"></div>
             </div>
@@ -99,6 +114,7 @@
 
             <!-- [ETHICAL_SSE] Your plugin logic is imported here -->
             <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/common.js"></script>
+            <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/framework.js"></script>
             <script src="__ATLASSIAN_BASE_URL__/download/resources/de.inversetransparenz.jira.dashboardPlugins/workloadPlugin.js"></script>
             <!-- Remove the loading indicator as soon as the script above has terminated. -->
             <script type="text/javascript">

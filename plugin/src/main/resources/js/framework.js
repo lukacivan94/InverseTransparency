@@ -3,6 +3,44 @@ var loggedInUser;
 var retrievedUser;
 const owners = []//['"jan@example.com"', '"lukac.ivan94@gmail.com"'];
 
+var prefs = new gadgets.Prefs(); // user preference for notice
+//var noticeAccepted = false; //variable used across all plugins
+
+// ------------------- Functions -----------------
+
+// This function is set just to switch the accepted to false on button click to help showcasing
+function setAcceptedToFalse() {
+    prefs.set("isAccepted", 0);
+    console.log("Is accepted: " + prefs.getInt("isAccepted"))
+}
+
+/**
+ * This function  */
+function displayNotice() {
+    //if (!noticeAccepted) {
+    var variable = prefs.getInt("isAccepted");
+    console.log("variable: " + variable);
+    if (prefs.getInt("isAccepted")==0) {
+        $("#spacerbox").append($('<div id="modalNotice" class="modal" tabindex="-1" role="dialog" style="height:600"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">Inverse Transparency Notice</h5></div> <div class="modal-body"> <div class="form-group"> <label for="noticeText1">This Dashboard gadget is part of the Inverse Transparency plugin</label><label for="noticeText2">By continuing you agree to exposing your username to the respective data owner whose data you are accessing. Data owner will be notified per every issue access.</label> </div> </div> <div class="modal-footer">  <button type="button" class="btn btn-primary" onClick="acceptNotice()">Accept and Continue</button> </div> </div> </div> </div>'));
+        $('#modalNotice').modal({
+            backdrop: 'static', // when you click outside of modal
+            keyboard: false     //or esc on keyboard modal doesn't disappear
+        });
+        $('#modalNotice').modal('show');
+    }
+}
+
+/**
+ * This function 
+ */
+function acceptNotice() {
+    prefs.set("isAccepted", 1);
+    //noticeAccepted = true;
+    $('#modalNotice').modal('hide');
+    //console.log("Notice has now been hidden and is set to: " + noticeAccepted);
+    console.log("Is accepted: " + prefs.getInt("isAccepted"))
+}
+
 //works
 // getting the email of the assignee (data owner whose data we look at)
 function directRequest(assignee, issueKey) {
@@ -170,6 +208,9 @@ function fetchQuery(requestBody) {
         }).then(function (resultJson) {
             if (resultJson !== undefined) {
                 console.log("Answer: " + JSON.stringify(resultJson));
+                if(!resultJson.granted){
+                    $("#hoverMessage").show();
+                }
             }
         });
 }

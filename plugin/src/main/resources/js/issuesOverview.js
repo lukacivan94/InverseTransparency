@@ -3,17 +3,24 @@
  * Functionality of the issues overview dashboard plugin.
  */
 
+
+ // TODO: fix bug when going from project view to list view for restricted users
+
 // ------------------- Variables -----------------
 
 
-var unlocked = false;
+//var unlocked = false;
 
 
 // ------------------- Functions -----------------
 
 function appendIssues(issues) {
 
-    directRequest(issues[0].assignee, issues[0].key);
+    // TODO: check if issues exist
+    issues.forEach(function(issue){
+        directRequest(issue.assignee, issue.key);
+    })
+    //directRequest(issues[0].assignee, issues[0].key);
 
     //console.log("Within appendIssues function: " + issues.length);
     var table = document.getElementById("userIssuesTable");
@@ -93,11 +100,10 @@ function sortUserIssues(user) {
  * This function builds the Calendar and displays issues of the selected user
  */
 function buildCalendar(issues) {
-    if($("#hoverMessage").is(":visible")){
-        console.log("Hover message is visible, Calendar not building")
-        return;
-    }
-    //document.addEventListener('DOMContentLoaded', function () {//});
+    // if ($("#hoverMessage").is(":visible")) {
+    //     console.log("Hover message is visible, Calendar not building")
+    //     return;
+    // }
     var calendarEl = document.getElementById('calendar');
     var events = issues.map(issue => {
         return {
@@ -138,15 +144,15 @@ function buildCalendar(issues) {
     console.log("Calendar has been built");
 }
 
-function displayHoverMessage() {
-    console.log("Hover message is displaying");
-    $('#hoverMessage').show();
-}
+// function displayHoverMessage() {
+//     console.log("Hover message is displaying");
+//     $('#hoverMessage').show();
+// }
 
-function hideHoverMessage() {
-    console.log("Hover message is gone");
-    $('#hoverMessage').hide();
-}
+// function hideHoverMessage() {
+//     console.log("Hover message is gone");
+//     $('#hoverMessage').hide();
+// }
 
 /** 
  * This function switches between different views of the plugin
@@ -181,6 +187,7 @@ function switchViews() {
             $("#selectProjectDiv").hide();
             $("#selectUserDiv").show();
             $("#viewSelector").html('<a href="#" class="calendarView">calendar view</a> | list view | <a href="#" class="projectView">project view</a>');
+            appendIssues(issuesOfUser); //added to fix the bug going from project view to list view
         }
         if ($(this).hasClass("projectView")) {
             $("#listView").hide();
@@ -195,29 +202,12 @@ function switchViews() {
     });
 }
 
-function toggleIssueDetails() {
-    unlocked = !unlocked;
-    console.log("Unlocked: " + unlocked);
-    buildCalendar(issuesOfUser);
-}
+// function toggleIssueDetails() {
+//     unlocked = !unlocked;
+//     console.log("Unlocked: " + unlocked);
+//     buildCalendar(issuesOfUser);
+// }
 
-/**
- * This function  */
-function displayNotice() {
-    if (!noticeAccepted) {
-        $("#spacerbox").append($('<div id="modalNotice" class="modal" tabindex="-1" role="dialog" style="height:600"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">Inverse Transparency Notice</h5></div> <div class="modal-body"> <div class="form-group"> <label for="noticeText1">This Dashboard gadget is part of the Inverse Transparency plugin</label><label for="noticeText2">By continuing you agree to exposing your username to the respective data owner whose data you are accessing. Data owner will be notified per every issue access.</label> </div> </div> <div class="modal-footer">  <button type="button" class="btn btn-primary" onClick="acceptNotice()">Accept and Continue</button> </div> </div> </div> </div>'));
-        $('#modalNotice').modal('show');
-    }
-}
-
-/**
- * This function 
- */
-function acceptNotice() {
-    noticeAccepted = true;
-    $('#modalNotice').modal('hide');
-    console.log("Notice has now been hidden and is set to: " + noticeAccepted);
-}
 
 
 // ------------------- Function calls -----------------

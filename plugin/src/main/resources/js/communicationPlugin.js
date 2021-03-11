@@ -9,6 +9,8 @@ const rolesWithCommentNumbers = [];
 // ------------------- Functions -----------------
 
 
+
+//TODO uncomment appendIssues function call in common.js
 function appendIssues(issues) {
     $.ajax({
         url: getCommentsOfProject(issues),
@@ -162,12 +164,18 @@ function buildChart() {
 // uniqueProjectUsers array has already been populated with the getProjects function call
 // and can be used here
 function appendUsers() {
+    queryRequest(uniqueProjectUsers);
+}
 
+function switchViews(){
+    $("#hoverMessage").hide();
 }
 
 // ------------------- Function calls -----------------
 
 getProjects();
+displayNotice();
+switchViews();
 
 
 
