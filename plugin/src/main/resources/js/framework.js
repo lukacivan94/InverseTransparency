@@ -20,7 +20,7 @@ function displayNotice() {
     //if (!noticeAccepted) {
     var variable = prefs.getInt("isAccepted");
     console.log("variable: " + variable);
-    if (prefs.getInt("isAccepted")==0) {
+    if (prefs.getInt("isAccepted") == 0) {
         $("#spacerbox").append($('<div id="modalNotice" class="modal" tabindex="-1" role="dialog" style="height:600"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">Inverse Transparency Notice</h5></div> <div class="modal-body"> <div class="form-group"> <label for="noticeText1">This Dashboard gadget is part of the Inverse Transparency plugin</label><label for="noticeText2">By continuing you agree to exposing your username to the respective data owner whose data you are accessing. Data owner will be notified per every issue access.</label> </div> </div> <div class="modal-footer">  <button type="button" class="btn btn-primary" onClick="acceptNotice()">Accept and Continue</button> </div> </div> </div> </div>'));
         $('#modalNotice').modal({
             backdrop: 'static', // when you click outside of modal
@@ -115,8 +115,8 @@ function fetchDirect(requestBody) {
         }).then(function (resultJson) {
             if (resultJson !== undefined) {
                 console.log("Answer: " + JSON.stringify(resultJson));
-                if(!resultJson.granted){
-                    $("#hoverMessage").show();
+                if (resultJson.granted) {
+                    $("#hoverMessage").hide();
                 }
             }
         });
@@ -186,6 +186,7 @@ function getLoggedInUserForQueryRequest(owners) {
 
 
 function fetchQuery(requestBody) {
+    $("#hoverMessageProject").show();
     const fetchBody = {
         method: "POST",
         headers: {
@@ -208,8 +209,8 @@ function fetchQuery(requestBody) {
         }).then(function (resultJson) {
             if (resultJson !== undefined) {
                 console.log("Answer: " + JSON.stringify(resultJson));
-                if(!resultJson.granted){
-                    $("#hoverMessage").show();
+                if (resultJson.granted) {
+                    $("#hoverMessageProject").hide();
                 }
             }
         });

@@ -16,7 +16,8 @@ const highestIssues = [];
 
 
 function switchViews() {
-    $("#hoverMessage").hide();
+    $("#hoverMessage").show();
+    $("#hoverMessageProject").hide();
     $("#projectView").hide();
     $("#selectProjectDiv").hide();
     $('#viewSelector').on('click', 'a', function () {
@@ -26,6 +27,8 @@ function switchViews() {
             $("#selectProjectDiv").hide();
             $("#selectUserDiv").show();
             $("#viewSelector").html('user view | <a href="#" class="projectView">project view</a>');
+            $("#hoverMessageProject").hide();
+            appendIssues(issuesOfUser);
         }
         if ($(this).hasClass("projectView")) {
             $("#userView").hide();
@@ -33,6 +36,9 @@ function switchViews() {
             $("#selectUserDiv").hide();
             $("#selectProjectDiv").show();
             $("#viewSelector").html('<a href="#" class="userView">user view</a> | project view');
+            $("#hoverMessageProject").show();
+            $("#hoverMessage").show();///////////////
+            //appendUsers();
         }
         return false;
     });
@@ -197,6 +203,9 @@ function calculateMttr(issues) {
 
 //this function is only here because it's extracted to common.js and being called there
 function appendUsers() {
+    $("#hoverMessage").hide();
+    //$("#hoverMessageProject").hide();
+    queryRequest(uniqueProjectUsers);
     console.log("Life is great");
 };
 

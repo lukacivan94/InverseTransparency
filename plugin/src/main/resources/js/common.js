@@ -112,7 +112,8 @@ function getProjects() {
  * This function gets all issues from the user and stores them in issues.
  */
 function getIssuesOfUser() {
-    $("#hoverMessage").hide();
+    $("#hoverMessage").show();
+    //$("#hoverMessageProject").show();
     issuesOfUser.length = 0;
     currentUser = document.getElementById('selectUser').value;
     console.log("Current user is: " + currentUser);
@@ -138,7 +139,8 @@ function getIssuesOfUser() {
 };
 
 function getIssuesOfProject() {
-    $("#hoverMessage").hide();
+    $("#hoverMessage").show();
+    $("#hoverMessageProject").show();
     issuesOfProject.length = 0;
     currentProject = document.getElementById('selectProject').value;
     console.log("Current project is: " + currentProject);
@@ -156,12 +158,10 @@ function getIssuesOfProject() {
                 resultJson.issues.forEach(function (res) {
                     buildIssues(res, issuesOfProject);
                 })
-
                 appendIssues(issuesOfProject);
                 getUsersOfProject();
             }
-        });
-
+        })
 }
 
 function getUsersWithProjectRoles(projectId, roleId) {
@@ -390,132 +390,3 @@ function checkDueDate(dueDate, resolutionDate) {
 // getProjects();
 
 
-
-// not used
-// api token: KLUiCLiGSE5byvjA6fB88B89
-// function getRolesOfProject() {
-//     fetch("/jira/rest/api/2/project/" + currentProject + "/role")
-//         .then(function (response) {
-//             if (response.ok) {
-//                 return response.json();
-//             } else {
-//                 console.error("JIRA API call failed");
-//                 return undefined;
-//             }
-//         })
-//         .then(function (resultJson) {
-//             if (resultJson !== undefined) {
-//             }
-//         });
-// }
-
-//THESE FUNCTIONS WERE MERGED TO getUsersWithProjectRoles() function
-
-// function getDevelopers() {
-//     developers.length = 0;
-//     fetch("/jira/rest/api/2/project/" + currentProject + "/role/10100")
-//         .then(function (response) {
-//             if (response.ok) {
-//                 return response.json();
-//             } else {
-//                 console.error("JIRA API call failed");
-//                 return undefined;
-//             }
-//         })
-//         .then(function (resultJson) {
-//             if (resultJson !== undefined) {
-//                 //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
-//                 if (resultJson.actors.length > 0) { //if a project has at least one actor
-//                     resultJson.actors.forEach(function (actor) {
-//                         developers.push({
-//                             name: actor.name,
-//                             role: resultJson.name
-//                         })
-//                     })
-//                     console.log("DEVELOPERS: " + JSON.stringify(developers));
-//                 }
-//             }
-//         });
-// }
-
-
-// function getTesters() {
-//     testers.length = 0;
-//     fetch("/jira/rest/api/2/project/" + currentProject + "/role/10101")
-//         .then(function (response) {
-//             if (response.ok) {
-//                 return response.json();
-//             } else {
-//                 console.error("JIRA API call failed");
-//                 return undefined;
-//             }
-//         })
-//         .then(function (resultJson) {
-//             if (resultJson !== undefined) {
-//                 //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
-//                 if (resultJson.actors.length > 0) { //if a project has at least one actor
-//                     resultJson.actors.forEach(function (actor) {
-//                         testers.push({
-//                             name: actor.name,
-//                             role: resultJson.name
-//                         })
-//                     })
-//                     console.log("TESTERS: " + JSON.stringify(testers));
-//                 }
-//             }
-//         });
-// }
-
-// function getViewers() {
-//     viewers.length = 0;
-//     fetch("/jira/rest/api/2/project/" + currentProject + "/role/10102")
-//         .then(function (response) {
-//             if (response.ok) {
-//                 return response.json();
-//             } else {
-//                 console.error("JIRA API call failed");
-//                 return undefined;
-//             }
-//         })
-//         .then(function (resultJson) {
-//             if (resultJson !== undefined) {
-//                 //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
-//                 if (resultJson.actors.length > 0) { //if a project has at least one actor
-//                     resultJson.actors.forEach(function (actor) {
-//                         viewers.push({
-//                             name: actor.name,
-//                             role: resultJson.name
-//                         })
-//                     })
-//                     console.log("VIEWERS: " + JSON.stringify(viewers));
-//                 }
-//             }
-//         });
-// }
-
-// function getProjectManagers() {
-//     projectManagers.length = 0;
-//     fetch("/jira/rest/api/2/project/" + currentProject + "/role/10103")
-//         .then(function (response) {
-//             if (response.ok) {
-//                 return response.json();
-//             } else {
-//                 console.error("JIRA API call failed");
-//                 return undefined;
-//             }
-//         })
-//         .then(function (resultJson) {
-//             if (resultJson !== undefined) {
-//                 //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
-//                 if (resultJson.actors.length > 0) { //if a project has at least one actor
-//                     resultJson.actors.forEach(function (actor) {
-//                         projectManagers.push({
-//                             name: actor.name,
-//                             role: resultJson.name
-//                         })
-//                     })
-//                     console.log("PROJECT MANAGERS: " + JSON.stringify(projectManagers));
-//                 }
-//             }
-//         });
-// }

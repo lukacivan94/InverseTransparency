@@ -168,7 +168,7 @@ function appendUsers() {
 }
 
 function switchViews(){
-    $("#hoverMessage").hide();
+    $("#hoverMessageProject").show();
 }
 
 // ------------------- Function calls -----------------

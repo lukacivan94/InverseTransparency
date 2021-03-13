@@ -80,7 +80,7 @@ function buildPieChart() {
 }
 
 function switchViews(){
-    $("#hoverMessage").hide();
+    $("#hoverMessageProject").show();
 }
 
 

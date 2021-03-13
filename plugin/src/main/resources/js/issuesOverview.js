@@ -4,7 +4,7 @@
  */
 
 
- // TODO: fix bug when going from project view to list view for restricted users
+// TODO: fix bug when going from project view to list view for restricted users
 
 // ------------------- Variables -----------------
 
@@ -17,7 +17,7 @@
 function appendIssues(issues) {
 
     // TODO: check if issues exist
-    issues.forEach(function(issue){
+    issues.forEach(function (issue) {
         directRequest(issue.assignee, issue.key);
     })
     //directRequest(issues[0].assignee, issues[0].key);
@@ -70,6 +70,7 @@ function appendUsers() {
             "<td style='text-align:center; background-color:#FF6A4B'>" + sortedIssues.successRate + "</td>";
         table.appendChild(tr);
     });
+
     queryRequest(uniqueProjectUsers);
 }
 
@@ -160,7 +161,8 @@ function buildCalendar(issues) {
 */
 function switchViews() {
     //$("#calendarView").hide();
-    $("#hoverMessage").hide();
+    $("#hoverMessage").show();
+    $("#hoverMessageProject").hide();
     $("#listView").hide();
     $("#projectView").hide();
     $("#selectProjectDiv").hide();
@@ -172,6 +174,7 @@ function switchViews() {
             $("#selectProjectDiv").hide();
             $("#selectUserDiv").show();
             $("#viewSelector").html('calendar view | <a href="#" class="listView">list view</a> | <a href="#" class="projectView">project view</a>');
+            $("#hoverMessageProject").hide();
             $.ajax({
                 url: getIssuesOfUser(),
                 success: function () {
@@ -187,6 +190,7 @@ function switchViews() {
             $("#selectProjectDiv").hide();
             $("#selectUserDiv").show();
             $("#viewSelector").html('<a href="#" class="calendarView">calendar view</a> | list view | <a href="#" class="projectView">project view</a>');
+            $("#hoverMessageProject").hide();
             appendIssues(issuesOfUser); //added to fix the bug going from project view to list view
         }
         if ($(this).hasClass("projectView")) {
@@ -196,7 +200,8 @@ function switchViews() {
             $("#selectUserDiv").hide();
             $("#selectProjectDiv").show();
             $("#viewSelector").html('<a href="#" class="calendarView">calendar view</a> | <a href="#" class="listView">list view</a> | project view');
-            $("#hoverMessage").hide();
+            $("#hoverMessage").show();
+            $("#hoverMessageProject").show();
         }
         return false;
     });
