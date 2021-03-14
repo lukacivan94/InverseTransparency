@@ -28,6 +28,7 @@ function switchViews() {
             $("#selectUserDiv").show();
             $("#viewSelector").html('user view | <a href="#" class="projectView">project view</a>');
             $("#hoverMessageProject").hide();
+            $("#hoverMessage").show();
             appendIssues(issuesOfUser);
         }
         if ($(this).hasClass("projectView")) {

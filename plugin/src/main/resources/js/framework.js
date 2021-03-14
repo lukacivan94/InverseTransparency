@@ -115,7 +115,8 @@ function fetchDirect(requestBody) {
         }).then(function (resultJson) {
             if (resultJson !== undefined) {
                 console.log("Answer: " + JSON.stringify(resultJson));
-                if (resultJson.granted) {
+                console.log("SAME USER: " + retrievedUser.name + "USER: " + loggedInUser);
+                if (resultJson.granted || retrievedUser.name ==loggedInUser) {
                     $("#hoverMessage").hide();
                 }
             }

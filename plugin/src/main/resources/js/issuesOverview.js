@@ -131,6 +131,7 @@ function buildCalendar(issues) {
         eventClick: function (info) {
             console.log("This is the assignee from event: " + info.event.groupId + ", key: " + info.event.id);
             directRequest(info.event.groupId, info.event.id);
+            window.open('http://localhost:2990/jira/browse/'+info.event.id,'_blank')
         },
         // eventMouseEnter: function (event) {
         //     $('#hoverMessage').show();
@@ -144,16 +145,6 @@ function buildCalendar(issues) {
 
     console.log("Calendar has been built");
 }
-
-// function displayHoverMessage() {
-//     console.log("Hover message is displaying");
-//     $('#hoverMessage').show();
-// }
-
-// function hideHoverMessage() {
-//     console.log("Hover message is gone");
-//     $('#hoverMessage').hide();
-// }
 
 /** 
  * This function switches between different views of the plugin
@@ -191,6 +182,7 @@ function switchViews() {
             $("#selectUserDiv").show();
             $("#viewSelector").html('<a href="#" class="calendarView">calendar view</a> | list view | <a href="#" class="projectView">project view</a>');
             $("#hoverMessageProject").hide();
+            $("#hoverMessage").show();
             appendIssues(issuesOfUser); //added to fix the bug going from project view to list view
         }
         if ($(this).hasClass("projectView")) {

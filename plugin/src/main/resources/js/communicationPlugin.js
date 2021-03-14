@@ -107,18 +107,18 @@ function groupCommentsPerRoles() {
                 })
             }
         })
-        var totalNumberOfcomments = numberOfDevelopersComments+numberOfTestersComments+numberOfViewersComments+numberOfProjectAdminsComments;
+        var totalNumberOfcomments = numberOfDevelopersComments + numberOfTestersComments + numberOfViewersComments + numberOfProjectAdminsComments;
         rolesWithCommentNumbers.push({
-            role: "Developers", numberOfComments: numberOfDevelopersComments/totalNumberOfcomments, color: 'color: #e4ff8a'
+            role: "Developers", numberOfComments: numberOfDevelopersComments / totalNumberOfcomments, color: 'color: #e4ff8a'
         })
         rolesWithCommentNumbers.push({
-            role: "Testers", numberOfComments: numberOfTestersComments/totalNumberOfcomments, color: 'color: #8aeaff'
+            role: "Testers", numberOfComments: numberOfTestersComments / totalNumberOfcomments, color: 'color: #8aeaff'
         })
         rolesWithCommentNumbers.push({
-            role: "Viewers", numberOfComments: numberOfViewersComments/totalNumberOfcomments, color: 'color: #ffea8a'
+            role: "Viewers", numberOfComments: numberOfViewersComments / totalNumberOfcomments, color: 'color: #ffea8a'
         })
         rolesWithCommentNumbers.push({
-            role: "Project Administrators", numberOfComments: numberOfProjectAdminsComments/totalNumberOfcomments, color: 'color: #f59b47'
+            role: "Project Administrators", numberOfComments: numberOfProjectAdminsComments / totalNumberOfcomments, color: 'color: #f59b47'
         })
     }
 }
@@ -132,7 +132,7 @@ function buildChart() {
 
         data.addColumn('string', 'Role');
         data.addColumn('number', 'Comments');
-        data.addColumn({type:'string', role:'style'}); //needs to be after the values column
+        data.addColumn({ type: 'string', role: 'style' }); //needs to be after the values column
 
         rolesWithCommentNumbers.forEach(function (role) {
             data.addRows([
@@ -142,16 +142,16 @@ function buildChart() {
 
         var options = {
             title: 'Comments per role',
-            legend: {position: 'none'},
+            legend: { position: 'none' },
             width: "620",
             height: "400",
             hAxis: {
                 title: 'Role',
             },
             vAxis: {
-                title: 'Number of comments', format:'#%'
+                title: 'Number of comments', format: '#%'
             },
-            
+
         };
 
         var chart = new google.visualization.ColumnChart(
@@ -165,9 +165,28 @@ function buildChart() {
 // and can be used here
 function appendUsers() {
     queryRequest(uniqueProjectUsers);
+    $.ajax({
+        url: queryRequest(uniqueProjectUsers),
+        success: function () {
+            checkKAnonymity();
+        }
+    });
 }
 
-function switchViews(){
+function checkKAnonymity() {
+    
+    var numberOfDevs = 0;
+    developers.forEach(function (developer) {
+        if (developer.projectId == currentProject) {
+            numberOfDevs++;
+        }
+    })
+    if (numberOfDevs >= 2) {
+        $("#hoverMessageProject").hide();
+    }
+}
+
+function switchViews() {
     $("#hoverMessageProject").show();
 }
 
@@ -176,6 +195,7 @@ function switchViews(){
 getProjects();
 displayNotice();
 switchViews();
+checkKAnonymity();
 
 
 

@@ -58,7 +58,7 @@
                         <i class="fa fa-eye"></i>
                 </button>
             </div>
-            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:500px">
+            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:550px">
                 <div class="row justify-content-center" style="margin-top: 15px">
                     <h4>Mean Time To Resolve</h4>
                 </div>
@@ -75,28 +75,26 @@
                         <option>Select the Project</option>
                     </select>
                 </div>
-                <div id="hoverMessage" class="row justify-content-center" style="margin-top: 15px; height:500; background-color:#ffeae3">
+                <div id="hoverMessage" class="row justify-content-center" style="background-image: linear-gradient(white, #ffdabf); margin-top: 15px; height:500; background-color:#ffeae3">
                     <div class="modal-header" style="margin-top: 15px; height:50">
                         <h5 class="modal-title">Inverse Transparency Notice</h5>
                     </div>
                     <div class="modal-body" style="margin-top: 15px; height:50">
                         <div class="form-group">
-                            <h5 class="modal-title">User(s) made a rule not to disclose this data</h5>
-                            <h5 class="modal-title">You can select another user or project from the dropdown</h5>
+                            <h5 style="text-align:center; background-image: linear-gradient(white);">This gadget contains personal data. If user(s) made a rule not to disclose their data you can select another user or project from the dropdown</h5>
                         </div>
                     </div>
                     <div class="modal-footer" style="margin-top: 15px; height:50">
                         <label>This is a Inverse Transparency plugin feature</label>
                     </div>
                 </div>
-                <div id="hoverMessageProject" class="row justify-content-center" style="margin-top: 15px; height:500; background-color:#ffeae3">
+                <div id="hoverMessageProject" class="row justify-content-center" style="background-image: linear-gradient(white, #ffdabf); margin-top: 15px; height:500; background-color:#ffeae3">
                     <div class="modal-header" style="margin-top: 15px; height:50">
                         <h5 class="modal-title">Inverse Transparency Notice</h5>
                     </div>
                     <div class="modal-body" style="margin-top: 15px; height:50">
                         <div class="form-group">
-                            <h5 class="modal-title">User(s) made a rule not to disclose this data</h5>
-                            <h5 class="modal-title">You can select another user or project from the dropdown</h5>
+                            <h5 style="text-align:center; background-image: linear-gradient(white);">This gadget contains personal data. If user(s) made a rule not to disclose their data you can select another user or project from the dropdown</h5>
                         </div>
                     </div>
                     <div class="modal-footer" style="margin-top: 15px; height:50">
