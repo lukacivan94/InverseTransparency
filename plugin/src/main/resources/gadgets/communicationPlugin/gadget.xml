@@ -54,7 +54,7 @@
                         <i class="fa fa-eye"></i>
                 </button>
             </div>
-            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:500px">
+            <div id="spacerbox" class="container-fluid" style="margin-top: 15px; height:550px">
                 <div class="row justify-content-center" style="margin-top: 15px">
                     <h4>Communication overview</h4>
                 </div>
@@ -77,6 +77,9 @@
                     </div>
                 </div>
                 <div id="chart_div" class="row justify-content-center" style="margin-top: 15px">
+                </div>
+                <div id="recommended_msg" class="row justify-content-center" style="margin-top: 15px">
+                    <label style="text-align:center; background-image: linear-gradient(#ffdabf);">Recommended upper and lower limits are displayed on y-axis</label>
                 </div>
             </div>
 

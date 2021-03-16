@@ -141,6 +141,16 @@ function buildChart() {
         })
 
         var options = {
+            // trendlines: {
+            //     1: {
+            //         type: 'linear',
+            //         color: 'green',
+            //         lineWidth: 3,
+            //         opacity: 0.3,
+            //         showR2: true,
+            //         visibleInLegend: true
+            //     }
+            // },
             title: 'Comments per role',
             legend: { position: 'none' },
             width: "620",
@@ -149,7 +159,8 @@ function buildChart() {
                 title: 'Role',
             },
             vAxis: {
-                title: 'Number of comments', format: '#%'
+                title: 'Number of comments', format: '#%',
+                ticks: [0.15,0.3]
             },
 
         };
@@ -174,7 +185,7 @@ function appendUsers() {
 }
 
 function checkKAnonymity() {
-    
+
     var numberOfDevs = 0;
     developers.forEach(function (developer) {
         if (developer.projectId == currentProject) {
