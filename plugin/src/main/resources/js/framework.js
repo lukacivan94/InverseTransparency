@@ -1,10 +1,9 @@
 
 var loggedInUser;
 var retrievedUser;
-const owners = []//['"jan@example.com"', '"lukac.ivan94@gmail.com"'];
+const owners = []
 
 var prefs = new gadgets.Prefs(); // user preference for notice
-//var noticeAccepted = false; //variable used across all plugins
 
 // ------------------- Functions -----------------
 
@@ -15,7 +14,9 @@ function setAcceptedToFalse() {
 }
 
 /**
- * This function  */
+ * This function  displays the notification once the dashboard gadget is loaded
+ * The notification is hidden when the user accepts it the first time
+ * */
 function displayNotice() {
     //if (!noticeAccepted) {
     var variable = prefs.getInt("isAccepted");
@@ -31,7 +32,7 @@ function displayNotice() {
 }
 
 /**
- * This function 
+ * This function sets the user preference variable to 1 to mark that the notice has been accepted
  */
 function acceptNotice() {
     prefs.set("isAccepted", 1);
@@ -41,8 +42,9 @@ function acceptNotice() {
     console.log("Is accepted: " + prefs.getInt("isAccepted"))
 }
 
-//works
-// getting the email of the assignee (data owner whose data we look at)
+/**
+ * This function retrieves a user for the direct request
+ */
 function directRequest(assignee, issueKey) {
     fetch("http://localhost:2990/jira/rest/api/2/user?username=" + assignee)
         .then(function (response) {
@@ -67,8 +69,9 @@ function directRequest(assignee, issueKey) {
         });
 }
 
-// getting vague data on logged in user (data consumer) then chain 
-//request to get detailed data and save it to loggedInUser variable
+/**
+ * This function retrieves data on the logged in user for the direct query
+ */
 function getLoggedInUser(retrievedUser, issueKey) {
     fetch("/jira/rest/auth/latest/session")
         .then(function (response) {
@@ -92,6 +95,9 @@ function getLoggedInUser(retrievedUser, issueKey) {
         });
 }
 
+/**
+ * This function fetches directly from Overseer
+ */
 function fetchDirect(requestBody) {
     const fetchBody = {
         method: "POST",
@@ -123,7 +129,9 @@ function fetchDirect(requestBody) {
         });
 }
 
-
+/**
+ * This function is used for syncing functions
+ */
 function queryRequest(assignees) {
     $.ajax({
         url: getOwners(assignees),
@@ -133,8 +141,10 @@ function queryRequest(assignees) {
     });
 }
 
-// this function recieves a list of assignee names and fetches their emails
-// and pushes them in owners array because FastAPI needs emails for owners array
+/**
+ * This function receives a list of assignee names and fetches their emails
+ * and pushes them in owners array because FastAPI needs emails for owners array
+ */
 function getOwners(assignees) {
     console.log("assignees: " + assignees);
     owners.length = 0;
@@ -151,16 +161,16 @@ function getOwners(assignees) {
                 })
                 .then(function (resultJson) {
                     if (resultJson !== undefined) {
-                        //console.log(JSON.stringify(resultJson));
                         owners.push(resultJson.emailAddress);
-                        //console.log("Retrieved user details: " + JSON.stringify(retrievedUser));
-                        //console.log("ALl Retrieved users details: " + JSON.stringify(owners));
                     }
                 });
         }
     });
 }
 
+/**
+ * This function gets the data on the logged in user for the query request
+ */
 function getLoggedInUserForQueryRequest(owners) {
     fetch("/jira/rest/auth/latest/session")
         .then(function (response) {
@@ -185,7 +195,9 @@ function getLoggedInUserForQueryRequest(owners) {
         });
 }
 
-
+/**
+ * This function creates a query fetch to Overseer
+ */
 function fetchQuery(requestBody) {
     $("#hoverMessageProject").show();
     const fetchBody = {
@@ -216,39 +228,3 @@ function fetchQuery(requestBody) {
             }
         });
 }
-
-
-
-
-// //works
-// function queryRequest() {
-//     //owners.push("jan@example.com");
-//     //owners.push("lukac.ivan94@gmail.com");
-//     console.log("OWNERS: " + owners);
-//     const requestBody = '{"data_types":["string"],"justification":"this is a query test from Ivan","tool":"jira","user":"demo1_jira","owners": [' + owners + ']}'
-
-//     const fetchBody = {
-//         method: "POST",
-//         headers: {
-//             accept: "application/json",
-//             Authorization: "Basic " + btoa("techie:some_body_00"),
-//             "Content-Type": "application/json"
-//         },
-//         body: requestBody
-//     };
-
-//     fetch("https://overseer.sse.in.tum.de/request-access/query", fetchBody)
-//         .then(function (response) {
-//             if (response.ok) {
-//                 return response.json();
-//             } else {
-//                 console.error("JIRA API call failed");
-//                 console.log("[ERROR]: " + response.json())
-//                 return undefined;
-//             }
-//         }).then(function (resultJson) {
-//             if (resultJson !== undefined) {
-//                 console.log("Answer: " + JSON.stringify(resultJson));
-//             }
-//         });
-// }

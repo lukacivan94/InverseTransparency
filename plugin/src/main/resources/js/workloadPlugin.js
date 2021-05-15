@@ -9,23 +9,22 @@ const usersWithNumberOfIssues = [];
 
 // ------------------- Functions -----------------
 
+/**
+ * This function  functionality is migrated to appendUsers()
+ * */
+function appendIssues(issues) {}
 
-function appendIssues(issues) {
-    //console.log("[PROJECT ISSUES]: " + JSON.stringify(issues));
-}
-
-// uniqueProjectUsers array has already been populated with the getProjects function call
-// and can be used here
+/**
+ * This function  triggers a queryRequest function and populates the GUI with data
+ * */
 function appendUsers() {
     queryRequest(uniqueProjectUsers);
     usersWithNumberOfIssues.length = 0;
-    //var numberOfAssignedIssues = issuesOfProject.length;
     uniqueProjectUsers.forEach(function (user) {
         var numberOfIssues = 0;
         issuesOfProject.forEach(function (issue) {
             if (issue.assignee == user) {
                 numberOfIssues++;
-                //numberOfAssignedIssues--;
             }
         })
         if (user == 'Unassigned') {
@@ -40,15 +39,13 @@ function appendUsers() {
                 numberOfIssues: numberOfIssues
             })
         }
-
-        //console.log("USERS AND ISSUE NUMBER: " + JSON.stringify(usersWithNumberOfIssues));
     })
-    //console.log("Number of unassigned: " + issuesOfProject.length - numberOfAssignedIssues)
     buildPieChart();
 };
 
-
-// TODO: Unassigned issues
+/**
+ * This function  builds a Google Pie Chart
+ * */
 function buildPieChart() {
     google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(drawChart);
@@ -79,6 +76,9 @@ function buildPieChart() {
     }
 }
 
+/**
+ * This function hides the data when it is restricted by the user
+ * */
 function switchViews(){
     $("#hoverMessageProject").show();
 }

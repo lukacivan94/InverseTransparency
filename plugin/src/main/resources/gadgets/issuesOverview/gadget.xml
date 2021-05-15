@@ -5,7 +5,7 @@
             directory_title="Issues Overview"
             description="A plugin that displays issues of a project"
             author="Ivan Lukac"
-            author_email="Ivan.Lukac@Sky.de"
+            author_email="lukac.ivan94@gmail.com"
             height="350">
         <Optional feature="gadget-directory">
             <Param name="categories">

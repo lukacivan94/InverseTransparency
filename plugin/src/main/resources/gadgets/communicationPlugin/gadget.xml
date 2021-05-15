@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
     <ModulePrefs
-            title="Communication Dashboard"
-            directory_title="Communication Plugin"
+            title="Communication Plugin"
+            directory_title="Communication"
             description="Plugin that displays Communication within a project"
             author="Ivan Lukac"
-            author_email=""
+            author_email="lukac.ivan94@gmail.com"
             height="350">
         <Optional feature="gadget-directory">
             <Param name="categories">

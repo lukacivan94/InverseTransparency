@@ -11,25 +11,20 @@ const projects = [];
 const issuesOfUser = [];
 const issuesOfProject = [];
 const commentsOfProjectIssues = [];
-const usersWithRoles = [];
+//const usersWithRoles = [];
 const developers = [];
 const testers = [];
 const viewers = [];
 const projectAdmins = [];
 
-
 var currentUser;
 var currentProject;
 
-
-
 // ------------------- Functions -----------------
 
-
-
 /**
- * This function returns a list of all users and saves them in users array. 
- * It populates the User Select
+ * This function returns a list of all Jira users and saves them in the users array. 
+ * It populates the Select User dropdown in the gadgets
  */
 function getUsers() {
     fetch("/jira/rest/api/2/user/search?username=.&maxResults=2000")
@@ -65,8 +60,8 @@ function getUsers() {
 }
 
 /**
- * This function gets all projects and stores them in projects.
- * It populates the Project Select
+ * This function returns a list of all Jira projects and saves them in the projects array. 
+ * It populates the Select Project dropdown in the gadgets
  */
 function getProjects() {
     fetch("/jira/rest/api/2/project")
@@ -109,11 +104,10 @@ function getProjects() {
 };
 
 /**
- * This function gets all issues from the user and stores them in issues.
+ * This function gets all issues from the user and saves them in the issuesOfUser array.
  */
 function getIssuesOfUser() {
     $("#hoverMessage").show();
-    //$("#hoverMessageProject").show();
     issuesOfUser.length = 0;
     currentUser = document.getElementById('selectUser').value;
     console.log("Current user is: " + currentUser);
@@ -128,16 +122,17 @@ function getIssuesOfUser() {
         })
         .then(function (resultJson) {
             if (resultJson !== undefined) {
-                //console.log("[ISSUES]: " + JSON.stringify(resultJson));
                 resultJson.issues.forEach(function (res) {
                     buildIssues(res, issuesOfUser);
                 });
-                //console.log("There are " + issuesOfUser.length + " issues: " + JSON.stringify(issuesOfUser));
                 appendIssues(issuesOfUser);
             }
         });
 };
 
+/**
+ * This function gets all issues from the project and saves them in the issuesOfProject array.
+ */
 function getIssuesOfProject() {
     $("#hoverMessage").show();
     $("#hoverMessageProject").show();
@@ -164,9 +159,12 @@ function getIssuesOfProject() {
         })
 }
 
+/**
+ * This function gets all users with the provided roleId of the provided project.
+ * @param {string} projectId id of the project
+ * @param {string} roleId id of the role
+ */
 function getUsersWithProjectRoles(projectId, roleId) {
-    //roleArray.length = 0;
-    //fetch("/jira/rest/api/2/project/" + currentProject + "/role/" + roleId)
     fetch("/jira/rest/api/2/project/" + projectId + "/role/" + roleId)
         .then(function (response) {
             if (response.ok) {
@@ -178,19 +176,16 @@ function getUsersWithProjectRoles(projectId, roleId) {
         })
         .then(function (resultJson) {
             if (resultJson !== undefined) {
-                //console.log("ROLES ARE HERE: " + JSON.stringify(resultJson));
                 if (resultJson.actors.length > 0) { //if a project has at least one actor
                     resultJson.actors.forEach(function (actor) {
                         if (roleId == 10100) {
                             developers.push({
                                 name: actor.name,
-                                //role: resultJson.name,
                                 projectId: projectId
                             })
                         } else if (roleId == 10101) {
                             testers.push({
                                 name: actor.name,
-                                //role: resultJson.name,
                                 projectId: projectId
                             })
                         } else if (roleId == 10102) {
@@ -207,15 +202,14 @@ function getUsersWithProjectRoles(projectId, roleId) {
                             })
                         }
                     })
-                    // console.log("Developers: " + JSON.stringify(developers)
-                    // + "Testers: " + JSON.stringify(testers)
-                    // + "Viewers: " + JSON.stringify(viewers)
-                    // + "Project admins: " + JSON.stringify(projectAdmins));
                 }
             }
         });
 }
 
+/**
+ * This function removes duplicates from the users array populated from ticket assignee field
+ */
 /*  i.e.
     SP-1: admin,
     SP-2: valentin,
@@ -235,12 +229,13 @@ function getUsersOfProject() {
     $.each(usersOfProject, function (i, el) {
         if ($.inArray(el, uniqueProjectUsers) === -1) uniqueProjectUsers.push(el);
     });
-    //console.log("Users of project: " + JSON.stringify(usersOfProject));
     console.log("Unique Users of project: " + JSON.stringify(uniqueProjectUsers));
     appendUsers();
 }
 
-
+/**
+ * This function builds issues by filtering only the necessary fields returned by Jira API
+ */
 function buildIssues(res, issues) {
     // we only consider assigned issues
     if (res.fields.assignee !== null) {
@@ -385,7 +380,7 @@ function checkDueDate(dueDate, resolutionDate) {
 
 // ------------------- Function calls -----------------
 
-
+// function calls are done separately in dashboards
 // getUsers();
 // getProjects();
 

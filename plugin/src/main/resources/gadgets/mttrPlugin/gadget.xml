@@ -2,10 +2,10 @@
 <Module>
     <ModulePrefs
             title="MTTR plugin"
-            directory_title="MTTR"
+            directory_title="Mean Time To Resolve"
             description="A plugin that displays MTTR"
             author="Ivan Lukac"
-            author_email="Ivan.Lukac@Sky.de"
+            author_email="lukac.ivan94@gmail.com"
             height="350">
         <Optional feature="gadget-directory">
             <Param name="categories">

@@ -3,26 +3,17 @@
  * Functionality of the issues overview dashboard plugin.
  */
 
-
-// TODO: fix bug when going from project view to list view for restricted users
-
-// ------------------- Variables -----------------
-
-
-//var unlocked = false;
-
-
 // ------------------- Functions -----------------
 
+/**
+ * This function  triggers a directRequest function and populates the GUI with data
+ * */
 function appendIssues(issues) {
 
-    // TODO: check if issues exist
     issues.forEach(function (issue) {
         directRequest(issue.assignee, issue.key);
     })
-    //directRequest(issues[0].assignee, issues[0].key);
-
-    //console.log("Within appendIssues function: " + issues.length);
+    
     var table = document.getElementById("userIssuesTable");
 
     // Clear the table from previous issues - anything but the header row
@@ -31,8 +22,6 @@ function appendIssues(issues) {
     };
 
     issues.forEach(function (object) {
-        //console.log("Within foreach:" + object.key);
-
         if (object.assignee !== "Unassigned") {
             var tr = document.createElement("tr");
             if (object.category == "red") {
@@ -50,9 +39,10 @@ function appendIssues(issues) {
     buildCalendar(issues);
 }
 
-//provide a list of users 
+/**
+ * This function  triggers a queryRequest function and populates the GUI with data
+ * */
 function appendUsers() {
-    //console.log("Within appendUsers function: " + uniqueProjectUsers.length);
     var table = document.getElementById("projectUsersTable");
 
     // Clear the table from previous users - anything but the header row
@@ -61,7 +51,6 @@ function appendUsers() {
     };
     uniqueProjectUsers.forEach(function (user) {
         var sortedIssues = sortUserIssues(user);
-        //console.log("[ISSUES]: " + JSON.stringify(sortedIssues));
         var tr = document.createElement("tr");
 
         tr.innerHTML = "<td style='text-align:center'>" + user + "</td>" +
@@ -74,6 +63,9 @@ function appendUsers() {
     queryRequest(uniqueProjectUsers);
 }
 
+/**
+ * This function sorts the red and green issues
+ * */
 function sortUserIssues(user) {
     var numberOfRedIssues = 0;
     var numberOfGreenIssues = 0;
@@ -88,7 +80,6 @@ function sortUserIssues(user) {
     }
     var totalIssues = numberOfGreenIssues + numberOfRedIssues;
     var successRate = Math.round(numberOfGreenIssues / totalIssues * 100) + "%";
-    //console.log("[SUCCESS RATE]: " + successRate);
     return {
         user: user,
         numberOfRedIssues: numberOfRedIssues,
@@ -101,10 +92,6 @@ function sortUserIssues(user) {
  * This function builds the Calendar and displays issues of the selected user
  */
 function buildCalendar(issues) {
-    // if ($("#hoverMessage").is(":visible")) {
-    //     console.log("Hover message is visible, Calendar not building")
-    //     return;
-    // }
     var calendarEl = document.getElementById('calendar');
     var events = issues.map(issue => {
         return {
@@ -133,12 +120,6 @@ function buildCalendar(issues) {
             directRequest(info.event.groupId, info.event.id);
             window.open('http://localhost:2990/jira/browse/'+info.event.id,'_blank')
         },
-        // eventMouseEnter: function (event) {
-        //     $('#hoverMessage').show();
-        // },
-        // eventMouseLeave: function (event) {
-        //     $('#hoverMessage').hide();
-        // }
     });
 
     calendar.render();
@@ -151,7 +132,6 @@ function buildCalendar(issues) {
  * List / Calendar / Project view
 */
 function switchViews() {
-    //$("#calendarView").hide();
     $("#hoverMessage").show();
     $("#hoverMessageProject").hide();
     $("#listView").hide();
@@ -172,7 +152,6 @@ function switchViews() {
                     buildCalendar(issuesOfUser);
                 }
             });
-            //buildCalendar(issuesOfUser);
         }
         if ($(this).hasClass("listView")) {
             $("#listView").show();
@@ -183,7 +162,7 @@ function switchViews() {
             $("#viewSelector").html('<a href="#" class="calendarView">calendar view</a> | list view | <a href="#" class="projectView">project view</a>');
             $("#hoverMessageProject").hide();
             $("#hoverMessage").show();
-            appendIssues(issuesOfUser); //added to fix the bug going from project view to list view
+            appendIssues(issuesOfUser);
         }
         if ($(this).hasClass("projectView")) {
             $("#listView").hide();
@@ -199,45 +178,9 @@ function switchViews() {
     });
 }
 
-// function toggleIssueDetails() {
-//     unlocked = !unlocked;
-//     console.log("Unlocked: " + unlocked);
-//     buildCalendar(issuesOfUser);
-// }
-
-
-
 // ------------------- Function calls -----------------
 
 getUsers();
 getProjects();
-//create populate() function to call all functions in background
 switchViews();
-//getUsers();
-//getProjects();
 displayNotice();
-//getLoggedInUser();
-//getUserDetails();
-//getLoggedInUserDetails();
-//getIssuesOfUser("valentin");
-
-
-
-
-// removed functionality - restapi used
-// function requestView(info) {
-
-//     visibleIssues.push(({
-//         key: "SP-2",
-//         visible: true
-//     }))
-//     if (checkIfVisible(info.event.title)) {
-//         displayVisibleIssue(info.event.title);
-//     } else {
-//         console.log("View has been requested for issue: " + info.event.title);
-//         alert("View has been requested for issue: " + info.event.title);
-
-//         // change the border color just for fun
-//         info.el.style.borderColor = 'red';
-//     }
-// }

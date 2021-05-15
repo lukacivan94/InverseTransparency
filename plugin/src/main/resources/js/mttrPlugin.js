@@ -14,7 +14,9 @@ const highestIssues = [];
 
 // ------------------- Functions -----------------
 
-
+/**
+ * This function switches between the views of the MTTR plugin
+ * */
 function switchViews() {
     $("#hoverMessage").show();
     $("#hoverMessageProject").hide();
@@ -45,7 +47,9 @@ function switchViews() {
     });
 }
 
-//this function needs to push issues to chart
+/**
+ * This function  triggers a directRequest function and populates the GUI with data
+ * */
 function appendIssues(issues) {
     console.log("Life is good");
     issues.forEach(function (issue) {
@@ -53,7 +57,9 @@ function appendIssues(issues) {
     })
     calculateMttr(issues);
 }
-
+/**
+ * This function  calculates the MTTR from issues' data
+ * */
 function calculateMttr(issues) {
     issuesByPriority.length = 0; // clearing previous user data
     var lowestCount = 0, lowCount = 0, mediumCount = 0, highCount = 0, highestCount = 0;
@@ -61,10 +67,7 @@ function calculateMttr(issues) {
     issues.forEach(function (issue) {
         var created = new Date(issue.created);
         var resolved = new Date(issue.resolutiondate);
-        //console.log("DATES ARE HERE:" + created + "-----" + resolved);
-        //number of hours between
         var hours = Math.abs(created - resolved) / 36e5;
-        console.log("HOURS ARE HERE:" + hours);
         if (issue.resolutiondate !== null) {
             if (issue.priority == "Lowest") {
                 lowestIssues.push({
@@ -201,11 +204,11 @@ function calculateMttr(issues) {
     }
 }
 
-
-//this function is only here because it's extracted to common.js and being called there
+/**
+ * This function  triggers a queryRequest function and populates the GUI with data
+ * */
 function appendUsers() {
     $("#hoverMessage").hide();
-    //$("#hoverMessageProject").hide();
     queryRequest(uniqueProjectUsers);
     console.log("Life is great");
 };
